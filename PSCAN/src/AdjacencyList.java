@@ -19,7 +19,7 @@ import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
  * @author Ningxin
  *
  */
-public class AdjancencyList {
+public class AdjacencyList {
 	
 	/**
 	 * Delete the duplicate lines in the input files.
@@ -114,7 +114,7 @@ public class AdjancencyList {
 		conf.set("mapreduce.input.keyvaluelinerecordreader.key.value.separator", "\n");
 		
 		Job deleteDuplicationJob = new Job(conf, "delete the duplication relationship");
-		deleteDuplicationJob.setJarByClass(AdjancencyList.class);
+		deleteDuplicationJob.setJarByClass(AdjacencyList.class);
 		deleteDuplicationJob.setMapperClass(deleteDuplicationMapper.class);	    	    
 		deleteDuplicationJob.setReducerClass(deleteDuplicationReducer.class);
 		deleteDuplicationJob.setPartitionerClass(KeyFieldBasedPartitioner.class);
@@ -147,7 +147,7 @@ public class AdjancencyList {
 		conf.set("mapreduce.input.keyvaluelinerecordreader.key.value.separator", "\n");
 		
 		Job findNeighborJob = new Job(conf, "find neighbour of each verticle");
-		findNeighborJob.setJarByClass(AdjancencyList.class);
+		findNeighborJob.setJarByClass(AdjacencyList.class);
 		findNeighborJob.setMapperClass(deleteDuplicationMapper.class);	    	    
 		findNeighborJob.setReducerClass(findNeighborReducer.class);
 		findNeighborJob.setPartitionerClass(KeyFieldBasedPartitioner.class);
@@ -181,7 +181,7 @@ public class AdjancencyList {
 			String output) throws IOException, ClassNotFoundException, InterruptedException {
 		conf.set("mapreduce.input.keyvaluelinerecordreader.key.value.separator", ",");
 		Job getAdjacencyListJob = new Job(conf, "get adjancency list");
-		getAdjacencyListJob.setJarByClass(AdjancencyList.class);
+		getAdjacencyListJob.setJarByClass(AdjacencyList.class);
 		getAdjacencyListJob.setMapperClass(getAdjacencyListMapper.class);	    
 		getAdjacencyListJob.setReducerClass(getAdjacencyListReducer .class);
 		getAdjacencyListJob.setPartitionerClass(KeyFieldBasedPartitioner.class);
