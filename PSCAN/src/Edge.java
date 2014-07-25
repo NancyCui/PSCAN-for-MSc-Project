@@ -13,8 +13,32 @@ public class Edge implements WritableComparable<Edge>{
 	private String inputVertex;
 	private String neighbor;
 	
+	public Edge(){
+		
+	}
+	
+	public Edge(String x, String y){
+		if(x.compareTo(y)<0){
+			this.inputVertex=x;
+			this.neighbor=y;
+		}
+		else{
+			this.inputVertex=y;
+			this.neighbor=x;
+		}
+	}
+	
+	
 	public String getInputVertex(){
 		return inputVertex;
+	}
+	
+	public String getNeighbor(){
+		return neighbor;
+	}
+	
+	public String getEdge(){
+		return (inputVertex+","+neighbor);
 	}
 	
 	/*
@@ -46,5 +70,6 @@ public class Edge implements WritableComparable<Edge>{
 				?inputVertex.compareTo(o.inputVertex)
 				:neighbor.compareTo(o.neighbor);
 	}
+
 
 }
