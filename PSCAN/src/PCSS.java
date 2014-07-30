@@ -11,6 +11,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
 
 
@@ -22,7 +23,7 @@ import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
 public class PCSS {
 	
 	//cut off the edges with the structural similarity less than threshold
-	private static Double thresHold=0.7; 
+	private static Double thresHold=0.8; 
 	
 	/**
 	 * Key is the input vertex, value is the adjacency list of the input vertex
@@ -63,7 +64,7 @@ public class PCSS {
 	 * @author Ningxin
 	 *
 	 */
-	public static class doPCSSReducer extends Reducer<Edge, Text, Text, DoubleWritable> {;
+	public static class doPCSSReducer extends Reducer<Edge, Text, Edge, DoubleWritable> {;
 		
 		private DoubleWritable strSimVal=new DoubleWritable();
 		
@@ -95,7 +96,7 @@ public class PCSS {
         	structuralSimilarity=(common)/Math.sqrt(inputList.length*neighborList.length);
         	strSimVal.set(structuralSimilarity);
         	if(structuralSimilarity>=thresHold){
-        		context.write(new Text(key.getEdge()), strSimVal);
+        		context.write(key, strSimVal);
         	}
         	 
         }
@@ -113,12 +114,12 @@ public class PCSS {
 		doPCSSJob.setPartitionerClass(KeyFieldBasedPartitioner.class);
 	    
 		doPCSSJob.setInputFormatClass(KeyValueTextInputFormat.class);
-		//doPCSSJob.setOutputFormatClass(SequenceFileOutputFormat.class);
+		doPCSSJob.setOutputFormatClass(SequenceFileOutputFormat.class);
 		
 		doPCSSJob.setMapOutputKeyClass(Edge.class); 
 		doPCSSJob.setMapOutputValueClass(Text.class); 
 	    
-		doPCSSJob.setOutputKeyClass(Text.class);
+		doPCSSJob.setOutputKeyClass(Edge.class);
 		doPCSSJob.setOutputValueClass(DoubleWritable.class);
 	    
 	    FileInputFormat.addInputPath(doPCSSJob, new Path(input));
