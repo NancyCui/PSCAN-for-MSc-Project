@@ -1,3 +1,5 @@
+import io.ArrayListWritable;
+
 import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
@@ -9,6 +11,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
 
@@ -83,17 +86,18 @@ public class AdjacencyList {
 	 * The key' is the input vertex
 	 * The value' is the adjacency list of the input vertex
 	 */
-	public static class getAdjacencyListReducer extends Reducer<Text, Text, Text, Text> {
+	public static class getAdjacencyListReducer extends Reducer<Text, Text, Text, ArrayListWritable<Text>> {
 		
 	    public void reduce(Text key, Iterable<Text> values,Context context) throws IOException, InterruptedException {	        
-	    	String adjacencyList = key.toString().replaceAll("	", "");
-	    	for (Text val : values){
-	            if (adjacencyList.length() > 0) {
-	            	adjacencyList += ",";
-	            }
-	            adjacencyList += val.toString();
-	        }
-	    	context.write(key, new Text(adjacencyList));
+	    	ArrayListWritable<Text> adjacencyList=new ArrayListWritable<Text>();
+	    	
+	    	String ownID=key.toString().replaceAll("	", "");
+	    	adjacencyList.add(new Text(ownID));    
+    		for(Text val:values){
+    			String value=val.toString();
+    			adjacencyList.add(new Text(value));
+    		}
+	    	context.write(key, adjacencyList);
 	    }
 	}	
 	
@@ -187,12 +191,13 @@ public class AdjacencyList {
 		getAdjacencyListJob.setPartitionerClass(KeyFieldBasedPartitioner.class);
 	    
 		getAdjacencyListJob.setInputFormatClass(KeyValueTextInputFormat.class);
+		getAdjacencyListJob.setOutputFormatClass(SequenceFileOutputFormat.class);
 		
 		getAdjacencyListJob.setMapOutputKeyClass(Text.class); 
 		getAdjacencyListJob.setMapOutputValueClass(Text.class); 
 	    
 		getAdjacencyListJob.setOutputKeyClass(Text.class);
-		getAdjacencyListJob.setOutputValueClass(Text.class);
+		getAdjacencyListJob.setOutputValueClass(ArrayListWritable.class);
 	    
 	    FileInputFormat.addInputPath(getAdjacencyListJob, new Path(input));
 	    FileOutputFormat.setOutputPath(getAdjacencyListJob, new Path(output));

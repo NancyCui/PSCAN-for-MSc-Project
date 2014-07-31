@@ -1,3 +1,6 @@
+import io.ArrayListWritable;
+import io.Edge;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -9,7 +12,7 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
@@ -23,7 +26,7 @@ import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
 public class PCSS {
 	
 	//cut off the edges with the structural similarity less than threshold
-	private static Double thresHold=0.8; 
+	private static Double thresHold=0.65; 
 	
 	/**
 	 * Key is the input vertex, value is the adjacency list of the input vertex
@@ -32,20 +35,20 @@ public class PCSS {
 	 * @author Ningxin
 	 *
 	 */
-	public static class doPCSSMapper extends Mapper<Text, Text, Edge, Text> {
+	public static class doPCSSMapper extends Mapper<Text, ArrayListWritable<Text>, Edge, ArrayListWritable<Text>> {
 		
-        public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
-        	String formatedValue = value.toString().replaceAll("	", "");
-        	String[] values=formatedValue.split(",");
+        public void map(Text key, ArrayListWritable<Text> value, Context context) throws IOException, InterruptedException {
+        	
         	ArrayList<ArrayList<String>> keyArray=new ArrayList<ArrayList<String>>();       
-        	for(int i=0;i<values.length;i++){
+        	for(int i=0;i<value.size();i++){
         		if(i!=0){
 	        		ArrayList<String> edge=new ArrayList<String>();
-	        		edge.add(key.toString());
-	        		edge.add(values[i]);
+	        		edge.add(key.toString().replaceAll("	", ""));
+	        		edge.add(value.get(i).toString());	        		
 	        		keyArray.add(edge);
         		}
         	}
+        	
         	for(int i=0;i<keyArray.size();i++){
         		String inputVertex=keyArray.get(i).get(0).toString();
         		String neighbor=keyArray.get(i).get(1).toString();
@@ -64,36 +67,36 @@ public class PCSS {
 	 * @author Ningxin
 	 *
 	 */
-	public static class doPCSSReducer extends Reducer<Edge, Text, Edge, DoubleWritable> {;
+	public static class doPCSSReducer extends Reducer<Edge, ArrayListWritable<Text>, Edge, DoubleWritable> {;
 		
 		private DoubleWritable strSimVal=new DoubleWritable();
 		
-        public void reduce(Edge key, Iterable<Text> values, Context context) throws IOException, InterruptedException {                      
-        	String inputAdjacencyList = "";
-        	String neighborAdjacencyList="";
+        public void reduce(Edge key, Iterable<ArrayListWritable<Text>> values, Context context) throws IOException, InterruptedException {                      
+        	ArrayListWritable<Text> inputList =new ArrayListWritable<Text>();
+        	ArrayListWritable<Text> neighborList=new ArrayListWritable<Text>();
         	double structuralSimilarity;
+        	
         	int i=0;
-        	for(Text val:values){
+        	for(ArrayListWritable<Text> val:values){
         		if(i==0){
-        			inputAdjacencyList+= val.toString().replaceAll("	", "");
+        			inputList=new ArrayListWritable<Text>(val);
         			i++;
         		}
         		else{
-        			neighborAdjacencyList+= val.toString().replaceAll("	", "");
+        			neighborList=new ArrayListWritable<Text>(val);
         		}
         	}
-        	String inputList[]=inputAdjacencyList.split(",");
-        	String neighborList[]=neighborAdjacencyList.split(",");
+        	
         	double common=0;
-        	for(int inputIndex=0; inputIndex<inputList.length;inputIndex++){
-        		for(int neighborIndex=0; neighborIndex<neighborList.length;neighborIndex++){
-        			if(inputList[inputIndex].compareTo(neighborList[neighborIndex])==0){
+        	for(int inputIndex=0; inputIndex<inputList.size();inputIndex++){
+        		for(int neighborIndex=0; neighborIndex<neighborList.size();neighborIndex++){
+        			if(inputList.get(inputIndex).toString().compareTo(neighborList.get(neighborIndex).toString())==0){
         				common++;
         				break;
         			}
         		}
         	}
-        	structuralSimilarity=(common)/Math.sqrt(inputList.length*neighborList.length);
+        	structuralSimilarity=(common)/Math.sqrt(inputList.size()*neighborList.size());
         	strSimVal.set(structuralSimilarity);
         	if(structuralSimilarity>=thresHold){
         		context.write(key, strSimVal);
@@ -108,16 +111,16 @@ public class PCSS {
 			String output) throws IOException, ClassNotFoundException, InterruptedException {
 		
 		Job doPCSSJob = new Job(conf, "get adjancency list");
-		doPCSSJob.setJarByClass(AdjacencyList.class);
+		doPCSSJob.setJarByClass(PCSS.class);
 		doPCSSJob.setMapperClass(doPCSSMapper.class);	    
 		doPCSSJob.setReducerClass(doPCSSReducer .class);
 		doPCSSJob.setPartitionerClass(KeyFieldBasedPartitioner.class);
 	    
-		doPCSSJob.setInputFormatClass(KeyValueTextInputFormat.class);
+		doPCSSJob.setInputFormatClass(SequenceFileInputFormat.class);
 		doPCSSJob.setOutputFormatClass(SequenceFileOutputFormat.class);
 		
 		doPCSSJob.setMapOutputKeyClass(Edge.class); 
-		doPCSSJob.setMapOutputValueClass(Text.class); 
+		doPCSSJob.setMapOutputValueClass(ArrayListWritable.class); 
 	    
 		doPCSSJob.setOutputKeyClass(Edge.class);
 		doPCSSJob.setOutputValueClass(DoubleWritable.class);
