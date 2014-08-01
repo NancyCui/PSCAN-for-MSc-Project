@@ -26,7 +26,7 @@ import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
 public class PCSS {
 	
 	//cut off the edges with the structural similarity less than threshold
-	private static Double thresHold=0.65; 
+	private static Double thresHold=0.7; 
 	
 	/**
 	 * Key is the input vertex, value is the adjacency list of the input vertex

@@ -3,6 +3,7 @@ import io.ArrayListWritable;
 import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.Job;
@@ -217,11 +218,14 @@ public class AdjacencyList {
 			boolean successDeleteDuplication=deleteDuplication(conf,args[1],"output2-relationship");
 			//get the adjustList of each node
 			if(successDeleteDuplication){
-				success=getAdjacencyList(conf,"output2-relationship", "output3-adjancencyList");
+				success=getAdjacencyList(conf,"output2-relationship", "output1-adjancencyList");
 			}
 		}
 	
 		if(success){
+			FileSystem fs = FileSystem.get(conf);
+			fs.delete(new Path(args[1]),true);
+			fs.delete(new Path("output2-relationship"),true);
 			System.exit(0);
 		}
 	}
