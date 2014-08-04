@@ -19,6 +19,12 @@ import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
 
 public class LPCC {
 	private static String output="output4-LPCC";
+	private static String outputInter="output5-LPCC";
+	private static String inputFile1=output; //input file for finding non-member nodes
+	private static String inputFile2="output1-adjacencyList";
+	private static String output_LPCC="output5-LPCC";
+	
+/*------------------------Find Cluster-------------------------------------------------------------------------------------------------*/	
 	private static int loopCount=0;
 	private static boolean iterateLPCC=true; 
 	
@@ -104,6 +110,89 @@ public class LPCC {
 		}
 
 	}	
+
+/*------------------------Find Non-member nodes-------------------------------------------------------------------------------------------------*/	
+	
+	/**
+	 * Read from the input files and get the key value pair for the reduce process 
+	 * @author Ningxin
+	 */
+	public static class findNonMemberMapper extends Mapper<Text, ArrayListWritable<ArrayListWritable<Text>>, Text, ArrayListWritable<ArrayListWritable<Text>>> {
+ 
+        public void map(Text key, ArrayListWritable<ArrayListWritable<Text>> value, Context context) throws IOException, InterruptedException {
+        	Text newKey=new Text(key.toString().replaceAll("	", ""));
+        	context.write(newKey, value);           
+        }
+    }
+	
+	public static class findNonMemberCombiner extends Reducer<Text, ArrayListWritable<ArrayListWritable<Text>>, Text, ArrayListWritable<ArrayListWritable<Text>>>{
+		 public void reduce(Text key, Iterable<ArrayListWritable<ArrayListWritable<Text>>> values, Context context) throws IOException, InterruptedException { 
+			 for(ArrayListWritable<ArrayListWritable<Text>> val: values){
+				 context.write(key, val);
+			 }
+		 }
+	}
+	
+	/**
+	 * Reformate the key value pair to get the final result
+	 * Input:
+	 * Key is the vertexID
+	 * Value is the structural information
+	 * The label in the structural is: inactivated/adList
+	 * Output:
+	 * Key' is the vertexID
+	 * Value' is the re-formated structural information
+	 * [[inactivated/adList], [clusterID], [adjacency list]]
+	 * The adjacency list is the one before cutting stage
+	 * @author Nancy
+	 *
+	 */
+	public static class findNonMemberReducer extends Reducer<Text, ArrayListWritable<ArrayListWritable<Text>>, Text, ArrayListWritable<ArrayListWritable<Text>>> {
+
+        public void reduce(Text key, Iterable<ArrayListWritable<ArrayListWritable<Text>>> values, Context context) throws IOException, InterruptedException {                      
+        	ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> newValues=new ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>>();
+        	ArrayListWritable<ArrayListWritable<Text>> value=new ArrayListWritable<ArrayListWritable<Text>>();
+        	
+        	for(ArrayListWritable<ArrayListWritable<Text>> val: values){
+        		value=new ArrayListWritable<ArrayListWritable<Text>>(val);
+        		newValues.add(value);       		
+        	}
+        	
+        	/*
+        	 * If there is only 1 value, means the nodes is neither a outlier or hub
+        	 */
+        	if(newValues.size()==1){        		
+        		context.write(key, newValues.get(0));
+        	}
+        	else if(newValues.size()==2){
+        		ArrayListWritable<ArrayListWritable<Text>> newStrInfo=new ArrayListWritable<ArrayListWritable<Text>>();
+        		ArrayListWritable<Text> newStatus=new ArrayListWritable<Text>();
+        		ArrayListWritable<Text> newLabel=new ArrayListWritable<Text>();
+        		ArrayListWritable<Text> newAdList=new ArrayListWritable<Text>();
+        		
+        		for(ArrayListWritable<ArrayListWritable<Text>> val: newValues){
+        			if(val.get(0).get(0).toString().equals("inactivated")){
+        				newStatus.add(val.get(0).get(0));
+        				newLabel.add(val.get(1).get(0));
+        			}
+        			else{
+        				newAdList=new ArrayListWritable<Text>(val.get(2));
+        			}
+        			
+        			
+        		}
+        		newStrInfo.add(newStatus);
+    			newStrInfo.add(newLabel);
+    			newStrInfo.add(newAdList);
+        		context.write(key,newStrInfo);
+        	}
+        	else{
+        		System.out.println("Error. The number of value is 0");
+        	}
+        }
+	}
+	
+	
 	
 /*------------------------Configuration of mapperClass and reducerClass-------------------------------------------------------------------------------------------------*/
 	private static boolean doLPCC(Configuration conf, String input,
@@ -133,11 +222,38 @@ public class LPCC {
 		
 	}
 	
+
+	private static boolean findNonMember(Configuration conf,
+			String inputFile1, String inputFile2, String output_LPCC) throws IOException, ClassNotFoundException, InterruptedException {
+		
+		Job findNonMemberJob = new Job(conf, "cluster-findNonMember");
+		findNonMemberJob.setJarByClass(LPCC.class);
+		findNonMemberJob.setMapperClass(findNonMemberMapper.class);	 
+		findNonMemberJob.setCombinerClass(findNonMemberCombiner.class);
+		findNonMemberJob.setReducerClass(findNonMemberReducer .class);
+		findNonMemberJob.setPartitionerClass(KeyFieldBasedPartitioner.class);
+	    
+		findNonMemberJob.setInputFormatClass(SequenceFileInputFormat.class);
+		findNonMemberJob.setOutputFormatClass(SequenceFileOutputFormat.class);
+		
+		findNonMemberJob.setMapOutputKeyClass(Text.class); 
+		findNonMemberJob.setMapOutputValueClass(ArrayListWritable.class); 
+	    
+		findNonMemberJob.setOutputKeyClass(Text.class);
+		findNonMemberJob.setOutputValueClass(ArrayListWritable.class);
+	    
+	    FileInputFormat.addInputPath(findNonMemberJob, new Path(inputFile1));
+	    FileInputFormat.addInputPath(findNonMemberJob, new Path(inputFile2));
+	    FileOutputFormat.setOutputPath(findNonMemberJob, new Path(output_LPCC));	    
+		
+	    return findNonMemberJob.waitForCompletion(true);
+	}
+	
 /*------------------------Main Method-------------------------------------------------------------------------------------------------*/		
 	public static void main(String[] args) throws Exception {
 		Configuration conf = new Configuration();
 		boolean successLPCC=true;
-		String outputInter="output5-LPCC";
+		boolean successNonMember;
 		FileSystem fs = FileSystem.get(conf);
 		
 		/*
@@ -176,9 +292,19 @@ public class LPCC {
 					fs.delete(new Path(outputInter),true);
 				}
 			}
-			System.exit(0);	
-		
 			
+			/*
+			 * Find hubs and outliers in network
+			 */
+			
+			successNonMember=findNonMember(conf,inputFile1, inputFile2, output_LPCC);
+			
+			if(successNonMember){
+				fs.delete(new Path(output),true);
+				fs.rename(new Path(output_LPCC), new Path(output));
+				System.exit(0);	
+			}
+		
 		}		
 		
 	}

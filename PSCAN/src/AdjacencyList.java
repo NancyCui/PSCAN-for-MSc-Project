@@ -25,6 +25,9 @@ import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
  */
 public class AdjacencyList {
 	
+	private static String outputFileName="output1-adjacencyList";
+	private static String relationshipFileName="output2-relationship";
+	
 	/**
 	 * Delete the duplicate lines in the input files.
 	 * @author Ningxin
@@ -228,17 +231,17 @@ public class AdjacencyList {
 		//delete the duplicate records in the original file and get the neighbor relation
 		boolean successfulFindNeighbor=findNeighbor(conf,args[0], args[1]);
 		if(successfulFindNeighbor){
-			boolean successDeleteDuplication=deleteDuplication(conf,args[1],"output2-relationship");
+			boolean successDeleteDuplication=deleteDuplication(conf,args[1],relationshipFileName);
 			//get the adjustList of each node
 			if(successDeleteDuplication){
-				success=getAdjacencyList(conf,"output2-relationship", "output1-adjacencyList");
+				success=getAdjacencyList(conf,relationshipFileName, outputFileName);
 			}
 		}
 	
 		if(success){
 			FileSystem fs = FileSystem.get(conf);
 			fs.delete(new Path(args[1]),true);
-			fs.delete(new Path("output2-relationship"),true);
+			fs.delete(new Path(relationshipFileName),true);
 			System.exit(0);
 		}
 	}
