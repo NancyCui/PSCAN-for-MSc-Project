@@ -35,16 +35,16 @@ public class PCSS {
 	 * @author Ningxin
 	 *
 	 */
-	public static class doPCSSMapper extends Mapper<Text, ArrayListWritable<Text>, Edge, ArrayListWritable<Text>> {
+	public static class doPCSSMapper extends Mapper<Text, ArrayListWritable<ArrayListWritable<Text>>, Edge, ArrayListWritable<Text>> {
 		
-        public void map(Text key, ArrayListWritable<Text> value, Context context) throws IOException, InterruptedException {
+        public void map(Text key, ArrayListWritable<ArrayListWritable<Text>> value, Context context) throws IOException, InterruptedException {
         	
         	ArrayList<ArrayList<String>> keyArray=new ArrayList<ArrayList<String>>();       
-        	for(int i=0;i<value.size();i++){
+        	for(int i=0;i<value.get(2).size();i++){
         		if(i!=0){
 	        		ArrayList<String> edge=new ArrayList<String>();
 	        		edge.add(key.toString().replaceAll("	", ""));
-	        		edge.add(value.get(i).toString());	        		
+	        		edge.add(value.get(2).get(i).toString());	        		
 	        		keyArray.add(edge);
         		}
         	}
@@ -53,7 +53,7 @@ public class PCSS {
         		String inputVertex=keyArray.get(i).get(0).toString();
         		String neighbor=keyArray.get(i).get(1).toString();
         		Edge edge=new Edge(inputVertex,neighbor);
-        		context.write(edge, value);
+        		context.write(edge, value.get(2));
         	}
         	
         	          

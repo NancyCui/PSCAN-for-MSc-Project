@@ -87,10 +87,15 @@ public class AdjacencyList {
 	 * The key' is the input vertex
 	 * The value' is the adjacency list of the input vertex
 	 */
-	public static class getAdjacencyListReducer extends Reducer<Text, Text, Text, ArrayListWritable<Text>> {
+	public static class getAdjacencyListReducer extends Reducer<Text, Text, Text, ArrayListWritable<ArrayListWritable<Text>>> {
 		
 	    public void reduce(Text key, Iterable<Text> values,Context context) throws IOException, InterruptedException {	        
+	    	String nodeLabel="adList";
+	    	
+	    	ArrayListWritable<ArrayListWritable<Text>> output=new ArrayListWritable<ArrayListWritable<Text>>();
 	    	ArrayListWritable<Text> adjacencyList=new ArrayListWritable<Text>();
+	    	ArrayListWritable<Text> status=new ArrayListWritable<Text>();
+	    	ArrayListWritable<Text> label=new ArrayListWritable<Text>();
 	    	
 	    	String ownID=key.toString().replaceAll("	", "");
 	    	adjacencyList.add(new Text(ownID));    
@@ -98,7 +103,15 @@ public class AdjacencyList {
     			String value=val.toString();
     			adjacencyList.add(new Text(value));
     		}
-	    	context.write(key, adjacencyList);
+    		
+    		status.add(new Text(nodeLabel));
+    		label.add(new Text(ownID));
+    		
+    		output.add(status);
+    		output.add(label);
+    		output.add(adjacencyList);
+    		
+	    	context.write(key, output);
 	    }
 	}	
 	
