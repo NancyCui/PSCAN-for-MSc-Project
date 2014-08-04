@@ -218,7 +218,7 @@ public class AdjacencyList {
 			boolean successDeleteDuplication=deleteDuplication(conf,args[1],"output2-relationship");
 			//get the adjustList of each node
 			if(successDeleteDuplication){
-				success=getAdjacencyList(conf,"output2-relationship", "output1-adjancencyList");
+				success=getAdjacencyList(conf,"output2-relationship", "output1-adjacencyList");
 			}
 		}
 	
