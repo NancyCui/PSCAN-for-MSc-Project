@@ -301,9 +301,10 @@ public class LPCC {
 			
 			if(successNonMember){
 				fs.delete(new Path(output),true);
-				fs.rename(new Path(output_LPCC), new Path(output));
-				System.exit(0);	
+				fs.rename(new Path(output_LPCC), new Path(output));				
 			}
+			
+			System.exit(0);	
 		
 		}		
 		
