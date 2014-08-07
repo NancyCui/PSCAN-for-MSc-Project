@@ -11,6 +11,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
 
 
@@ -27,14 +28,16 @@ public class Clustering {
     }
 	
 	
-	public static class convertReducer extends Reducer<Text, Text, Text, ArrayListWritable<Text>> {
+	public static class convertReducer extends Reducer<Text, Text, Text, ArrayListWritable<ArrayListWritable<Text>>> {
 
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {                      
+        	ArrayListWritable<ArrayListWritable<Text>> output=new ArrayListWritable<ArrayListWritable<Text>>();
         	ArrayListWritable<Text> clusterMember=new ArrayListWritable<Text>();
         	for(Text val:values){
         		clusterMember.add(new Text(val.toString()));
         	}
-        	context.write(key, clusterMember);
+        	output.add(clusterMember);
+        	context.write(key, output);
         	
         }
 	}
@@ -50,7 +53,7 @@ public class Clustering {
 		convertJob.setPartitionerClass(KeyFieldBasedPartitioner.class);
 	    
 		convertJob.setInputFormatClass(SequenceFileInputFormat.class);
-		//convertJob.setOutputFormatClass(SequenceFileOutputFormat.class);
+		convertJob.setOutputFormatClass(SequenceFileOutputFormat.class);
 		
 		convertJob.setMapOutputKeyClass(Text.class); 
 		convertJob.setMapOutputValueClass(Text.class); 

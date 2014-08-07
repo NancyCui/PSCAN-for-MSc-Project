@@ -1,40 +1,58 @@
-// cc SequenceFileReadDemo Reading a SequenceFile
-
 package fileIO;
+
+import io.ArrayListWritable;
+
 import java.io.IOException;
-import java.net.URI;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.io.SequenceFile;
-import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.util.ReflectionUtils;
 
 public class SequenceFileReader {
-  
-  public static void main(String[] args) throws IOException {
-    String uri = "/Users/Nancy/Documents/Java/PSCAN/output4-LPCC/part-r-00000";
-    Configuration conf = new Configuration();
-    FileSystem fs = FileSystem.get(URI.create(uri), conf);
-    Path path = new Path(uri);
+	
+	/**
+	 * Read sequence file and store the key value pair into ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>>
+	 * @param fs
+	 * @param path
+	 * @param conf
+	 * @return 
+	 * @throws IOException
+	 */
+	@SuppressWarnings("finally")
+	public static ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> readSequenceFile(FileSystem fs, Path path,
+			Configuration conf) throws IOException {
 
-    SequenceFile.Reader reader = null;
-    try {
-      reader = new SequenceFile.Reader(fs, path, conf);
-      Writable key = (Writable)
-        ReflectionUtils.newInstance(reader.getKeyClass(), conf);
-      Writable value = (Writable)
-        ReflectionUtils.newInstance(reader.getValueClass(), conf);
-      long position = reader.getPosition();
-      while (reader.next(key, value)) {
-        String syncSeen = reader.syncSeen() ? "*" : "";
-        System.out.printf("[%s%s]\t%s\t%s\n", position, syncSeen, key, value);
-        position = reader.getPosition(); // beginning of next record
-      }
-    } finally {
-      IOUtils.closeStream(reader);
-    }
-  }
+		ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> output=new ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>>();
+		
+		SequenceFile.Reader reader = null;
+	    try {
+	      reader = new SequenceFile.Reader(fs, path, conf);
+	      Text key = (Text)ReflectionUtils.newInstance(reader.getKeyClass(), conf);
+	      @SuppressWarnings("unchecked")
+	      ArrayListWritable<ArrayListWritable<Text>> value =  (ArrayListWritable<ArrayListWritable<Text>>)ReflectionUtils.newInstance(reader.getValueClass(), conf);
+	      while (reader.next(key, value)) {
+	    	  ArrayListWritable<ArrayListWritable<Text>> keyValue=new ArrayListWritable<ArrayListWritable<Text>>();
+	    	  ArrayListWritable<Text> newKey=new ArrayListWritable<Text>();
+	    	  newKey.add(new Text(key.toString()));
+	    	  keyValue.add(newKey);
+	    	  for(int i=0;i<value.size();i++){
+	    		  keyValue.add(new ArrayListWritable<Text>(value.get(i)));
+	    	  }	
+	    	  output.add(keyValue);	    	  
+	      }
+	      
+	    } finally {
+	      IOUtils.closeStream(reader);
+	      return output;
+	    }		
+	}
+	
+		
+
+
+
 }
