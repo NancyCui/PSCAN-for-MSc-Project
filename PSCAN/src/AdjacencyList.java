@@ -32,7 +32,7 @@ public class AdjacencyList {
 	 * Delete the duplicate lines in the input files.
 	 * @author Ningxin
 	 */
-	public static class deleteDuplicationMapper extends Mapper<Text, Text, Text, Text> {
+	private static class deleteDuplicationMapper extends Mapper<Text, Text, Text, Text> {
     	private Text userRelationID=new Text();
  
         public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
@@ -45,7 +45,7 @@ public class AdjacencyList {
 	 * Delete the duplicate items
 	 * @author Ningxin
 	 */
-	public static class deleteDuplicationReducer extends Reducer<Text, Text, Text, Text> {
+	private static class deleteDuplicationReducer extends Reducer<Text, Text, Text, Text> {
 
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {                      
         	context.write(key, new Text(""));
@@ -57,7 +57,7 @@ public class AdjacencyList {
 	 * Write not only the key(fromID, toID) but also key(toID, fromID)
 	 * @author Ningxin
 	 */
-	public static class findNeighborReducer extends Reducer<Text, Text, Text, Text> {
+	private static class findNeighborReducer extends Reducer<Text, Text, Text, Text> {
 		private Text invertKey=new Text(); //store the invert relationship, Example: (fromID, toID)->(toID, fromID)
 		 
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {                      
@@ -78,7 +78,7 @@ public class AdjacencyList {
 	/**
 	 * Invert the key value pair and add to the original file
 	 */
-	public static class getAdjacencyListMapper extends Mapper<Text, Text, Text, Text> {
+	private static class getAdjacencyListMapper extends Mapper<Text, Text, Text, Text> {
 		public void map(Text key, Text value, Context context) throws IOException, InterruptedException {			
 			context.write(value,key);
 		}
@@ -90,7 +90,7 @@ public class AdjacencyList {
 	 * The key' is the input vertex
 	 * The value' is the adjacency list of the input vertex
 	 */
-	public static class getAdjacencyListReducer extends Reducer<Text, Text, Text, ArrayListWritable<ArrayListWritable<Text>>> {
+	private static class getAdjacencyListReducer extends Reducer<Text, Text, Text, ArrayListWritable<ArrayListWritable<Text>>> {
 		
 	    public void reduce(Text key, Iterable<Text> values,Context context) throws IOException, InterruptedException {	        
 	    	String nodeLabel="adList";

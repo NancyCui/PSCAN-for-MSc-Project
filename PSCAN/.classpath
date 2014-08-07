@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="/usr/local/Cellar/hadoop/2.4.1/libexec/share/hadoop/tools/lib/hadoop-datajoin-2.4.1.jar"/>
 	<classpathentry kind="lib" path="/usr/local/Cellar/hadoop/2.4.1/libexec/share/hadoop/common/hadoop-common-2.4.1.jar"/>
 	<classpathentry kind="lib" path="/usr/local/Cellar/hadoop/2.4.1/libexec/share/hadoop/common/lib/commons-cli-1.2.jar"/>
+	<classpathentry kind="lib" path="/usr/local/Cellar/hadoop/2.4.1/libexec/share/hadoop/common/lib/commons-io-2.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
