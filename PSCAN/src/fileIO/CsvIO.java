@@ -1,7 +1,4 @@
 package fileIO;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -14,7 +11,7 @@ import com.csvreader.CsvReader;
  * @author Ningxin
  *
  */
-public class CSVReader {
+public class CsvIO {
 	
 	private static String basePath = "/Users/Nancy/Documents/Java/PSCAN/";
 	private static String inputFileName=basePath+"Messages.csv";
@@ -55,29 +52,6 @@ public class CSVReader {
 		return content;
 	}
 	
-	public static void insertFile(String filename, ArrayList<String> contents){
-		try{
-			File file=new File(filename);
-			if(!file.exists()){
-				file.createNewFile();
-			}
-			String output = "";
-			for(int i=0;i<contents.size();i++){
-				output+=contents.get(i);
-				output+=(i==contents.size()-1?"":"\n");
-			}
-			output+=lineSep;		
-			BufferedWriter writer = new BufferedWriter(new FileWriter(file,true));
-			writer.write(output);
-			writer.flush();
-			writer.close();			
-			
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-			
-	}
-	
 	/**
 	 * Get the specific data (key, value) pair
 	 * @param message
@@ -98,11 +72,12 @@ public class CSVReader {
 	}
 	
 	public static void main(String[] args) throws IOException {
+		
 		ArrayList<ArrayList<String>> message=readFile(inputFileName);
 		int column = 6; //get the participations data
 		ArrayList<String> participants=getParticipants(message, column);		
 		System.out.println("Writing...");
-		insertFile(outputFileName, participants);
+		TxtFileIO.insertFile(outputFileName, participants);
 		System.out.println("Finish");
 	}
 

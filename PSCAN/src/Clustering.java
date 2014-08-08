@@ -28,15 +28,13 @@ public class Clustering {
     }
 	
 	
-	public static class convertReducer extends Reducer<Text, Text, Text, ArrayListWritable<ArrayListWritable<Text>>> {
+	public static class convertReducer extends Reducer<Text, Text, Text, ArrayListWritable<Text>> {
 
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {                      
-        	ArrayListWritable<ArrayListWritable<Text>> output=new ArrayListWritable<ArrayListWritable<Text>>();
-        	ArrayListWritable<Text> clusterMember=new ArrayListWritable<Text>();
+        	ArrayListWritable<Text> output=new ArrayListWritable<Text>();
         	for(Text val:values){
-        		clusterMember.add(new Text(val.toString()));
+        		output.add(new Text(val.toString()));
         	}
-        	output.add(clusterMember);
         	context.write(key, output);
         	
         }

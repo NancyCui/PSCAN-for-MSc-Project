@@ -25,8 +25,18 @@ import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
  */
 public class PCSS {
 	
+	private static double thresHold;
+	
+	public PCSS(){
+		thresHold=0.0; 
+	}
+	
+	public PCSS(double definedThresHold){
+		thresHold=definedThresHold;
+	}
+	
 	//cut off the edges with the structural similarity less than threshold
-	private static Double thresHold=0.7; 
+	
 	
 	/**
 	 * Key is the input vertex, value is the adjacency list of the input vertex
@@ -35,7 +45,7 @@ public class PCSS {
 	 * @author Ningxin
 	 *
 	 */
-	public static class doPCSSMapper extends Mapper<Text, ArrayListWritable<ArrayListWritable<Text>>, Edge, ArrayListWritable<Text>> {
+	private static class doPCSSMapper extends Mapper<Text, ArrayListWritable<ArrayListWritable<Text>>, Edge, ArrayListWritable<Text>> {
 		
         public void map(Text key, ArrayListWritable<ArrayListWritable<Text>> value, Context context) throws IOException, InterruptedException {
         	
@@ -67,7 +77,7 @@ public class PCSS {
 	 * @author Ningxin
 	 *
 	 */
-	public static class doPCSSReducer extends Reducer<Edge, ArrayListWritable<Text>, Edge, DoubleWritable> {;
+	private static class doPCSSReducer extends Reducer<Edge, ArrayListWritable<Text>, Edge, DoubleWritable> {;
 		
 		private DoubleWritable strSimVal=new DoubleWritable();
 		
@@ -107,7 +117,7 @@ public class PCSS {
 	
 	
 /*------------------------Configuration of mapperClass and reducerClass-------------------------------------------------------------------------------------------------*/
-	private static boolean doPCSS(Configuration conf, String input,
+	private boolean doPCSS(Configuration conf, String input,
 			String output) throws IOException, ClassNotFoundException, InterruptedException {
 		
 		Job doPCSSJob = new Job(conf, "get adjancency list");
@@ -133,8 +143,9 @@ public class PCSS {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		Configuration conf = new Configuration();		
-		boolean successPCSS=doPCSS(conf,args[0], args[1]);
+		Configuration conf = new Configuration();
+		PCSS pcss=new PCSS(0.75);
+		boolean successPCSS=pcss.doPCSS(conf,args[0], args[1]);
 		if(successPCSS){
 			System.exit(0);
 		}		

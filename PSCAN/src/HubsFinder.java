@@ -8,7 +8,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 
-import fileIO.SequenceFileReader;
+import fileIO.SequenceFileIO;
 
 
 public class HubsFinder {
@@ -91,15 +91,17 @@ public class HubsFinder {
 		String bathPath = "/Users/Nancy/Documents/Java/PSCAN/";
 		String fileVertex=bathPath+"output4-LPCC/part-r-00000";
 		String fileCluster=bathPath+"output5-Clusters/part-r-00000";
+		
 	    Configuration conf = new Configuration();
 	    FileSystem fsVertex = FileSystem.get(URI.create(fileVertex), conf);
 	    Path pathVertex = new Path(fileVertex);
 	    FileSystem fsCluster = FileSystem.get(URI.create(fileCluster), conf);
 	    Path pathCluster = new Path(fileCluster);
+	   
 	    
 	    //read the sequence file
-	    ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> vertexs=SequenceFileReader.readSequenceFile(fsVertex, pathVertex, conf);   
-	    ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> clusters=SequenceFileReader.readSequenceFile(fsCluster, pathCluster, conf);
+	    ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> vertexs=SequenceFileIO.readSequenceFileTAA(fsVertex, pathVertex, conf);   
+	    ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> clusters=SequenceFileIO.readSequenceFileTA(fsCluster, pathCluster, conf);
 	    //find Hubs and outliners  
 	    ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> output=findHubs(vertexs, clusters);
 	    for(int i=0;i<output.size();i++){
