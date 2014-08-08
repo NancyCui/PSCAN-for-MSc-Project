@@ -23,6 +23,7 @@ public class PSCAN {
 		PCSStoLPCCMapReduce pcssToLPCCMapReduce=PCSStoLPCCMapReduce.getInstance();
 		pcssToLPCCMapReduce.formateToLPCC();
 		
+		LPCCMapReduce.LPCC();
 //		LPCCMapReduce lpccMapReduce=LPCCMapReduce.getInstance();
 //		lpccMapReduce.LPCC();
 		

@@ -19,11 +19,15 @@ import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
 
 
 public class LPCCMapReduce {
-	private static String output="output4-LPCC";
-	private static String outputInter="output5-LPCC";
+	
+	private static String basePath = "/Users/Nancy/Documents/Java/NetworkCluster/";
+	private static String inputFile=basePath+"output/output3-PtoL";
+	private static String outputFile=basePath+"output/output4-LPCC";
+	private static String output=basePath+"output/output4-LPCC";
+	private static String outputInter=basePath+"output/output5-LPCC";
 	private static String inputFile1=output; //input file for finding non-member nodes
-	private static String inputFile2="output1-adjacencyList";
-	private static String output_LPCC="output5-LPCC";
+	private static String inputFile2=basePath+"output/output1-adjacencyList";
+	private static String output_LPCC=basePath+"output/output5-LPCC";
 	
 /*------------------------Find Cluster-------------------------------------------------------------------------------------------------*/	
 	private static int loopCount=0;
@@ -235,7 +239,7 @@ public class LPCCMapReduce {
 		findNonMemberJob.setPartitionerClass(KeyFieldBasedPartitioner.class);
 	    
 		findNonMemberJob.setInputFormatClass(SequenceFileInputFormat.class);
-		findNonMemberJob.setOutputFormatClass(SequenceFileOutputFormat.class);
+		//findNonMemberJob.setOutputFormatClass(SequenceFileOutputFormat.class);
 		
 		findNonMemberJob.setMapOutputKeyClass(Text.class); 
 		findNonMemberJob.setMapOutputValueClass(ArrayListWritable.class); 
@@ -251,7 +255,7 @@ public class LPCCMapReduce {
 	}
 	
 /*------------------------Main Method-------------------------------------------------------------------------------------------------*/		
-	public static void main(String[] args) throws Exception {
+	public static void LPCC() throws Exception {
 		Configuration conf = new Configuration();
 		boolean successLPCC=true;
 		boolean successNonMember;
@@ -263,19 +267,19 @@ public class LPCCMapReduce {
 		while(successLPCC){
 			while(iterateLPCC){
 				if(loopCount==0){
-					successLPCC=doLPCC(conf,args[0], args[1]);
+					successLPCC=doLPCC(conf,inputFile, outputFile);
 					loopCount++;
 				}
 				else if((loopCount%2)==0&&loopCount!=0){
-					fs.delete(new Path(args[1]), true);
-					successLPCC=doLPCC(conf,outputInter, args[1]);
+					fs.delete(new Path(outputFile), true);
+					successLPCC=doLPCC(conf,outputInter, outputFile);
 					loopCount++;
 				}
 				else{
 					if(fs.exists(new Path(outputInter))){
 						fs.delete(new Path(outputInter),true);
 					}
-					successLPCC=doLPCC(conf,args[1], outputInter);
+					successLPCC=doLPCC(conf,outputFile, outputInter);
 					loopCount++;
 				}
 			}
@@ -284,11 +288,11 @@ public class LPCCMapReduce {
 			 * format the name of the output file
 			 */
 			if(loopCount%2==0&&loopCount!=0){
-				fs.delete(new Path(args[1]),true);
+				fs.delete(new Path(outputFile),true);
 				fs.rename(new Path(outputInter), new Path(output));
 			}
 			else{
-				fs.rename(new Path(args[1]), new Path(output));
+				fs.rename(new Path(outputFile), new Path(output));
 				if(fs.exists(new Path(outputInter))){
 					fs.delete(new Path(outputInter),true);
 				}
