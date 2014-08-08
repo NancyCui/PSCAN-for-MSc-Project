@@ -1,4 +1,4 @@
-import com.ibm.pscan.io.ArrayListWritable;
+import com.ibm.pscan.type.ArrayListWritable;
 
 import java.io.IOException;
 

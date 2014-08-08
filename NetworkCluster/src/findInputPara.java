@@ -1,4 +1,4 @@
-import com.ibm.pscan.io.ArrayListWritable;
+import com.ibm.pscan.type.ArrayListWritable;
 
 import java.io.IOException;
 import java.net.URI;
@@ -8,7 +8,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 
-import com.ibm.pscan.fileIO.SequenceFileIO;
+import com.ibm.pscan.io.SequenceFileIO;
 
 
 public class findInputPara {

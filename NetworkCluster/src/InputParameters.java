@@ -1,4 +1,4 @@
-import com.ibm.pscan.io.Edge;
+import com.ibm.pscan.type.Edge;
 
 import java.io.IOException;
 

@@ -3,8 +3,8 @@ package com.ibm.pscan.dataHelper;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.ibm.pscan.fileIO.CsvFileIO;
-import com.ibm.pscan.fileIO.TxtFileIO;
+import com.ibm.pscan.io.CsvFileIO;
+import com.ibm.pscan.io.TxtFileIO;
 
 /**
  * Get the participation information in the inputfile
@@ -20,10 +20,19 @@ public class GetParticipant {
 	private static String inputFileName=basePath+"ori/Messages.csv";
 	private static String outputFileName=basePath + "input/userRelation2.txt";
 	
-	public GetParticipant(){
-		
-	}
+	private static GetParticipant getParticipantInstance=null;
 	
+	private GetParticipant() {
+		
+	}	
+	
+	public static GetParticipant getInstance(){
+		if(getParticipantInstance==null){
+			getParticipantInstance=new GetParticipant();
+		}
+		return getParticipantInstance;
+	}
+		
 	/**
 	 * Get the specific data (key, value) pair- the participants information
 	 * 
@@ -55,9 +64,8 @@ public class GetParticipant {
 	}
 
 	
-	public static void main(String[] args) throws IOException {
-		GetParticipant getParti=new GetParticipant();
-		getParti.participant();		
+	public void relationship() throws IOException {
+		participant();		
 	}
 
 
