@@ -17,7 +17,7 @@ import com.ibm.pscan.fileIO.TxtFileIO;
 public class GetParticipant {
 	
 	private static String basePath = "/Users/Nancy/Documents/Java/NetworkCluster/";
-	private static String inputFileName=basePath+"Messages.csv";
+	private static String inputFileName=basePath+"ori/Messages.csv";
 	private static String outputFileName=basePath + "input/userRelation2.txt";
 	
 	public GetParticipant(){
