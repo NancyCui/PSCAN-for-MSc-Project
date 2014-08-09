@@ -1,4 +1,6 @@
+package com.ibm.pscan.mapreduce;
 import com.ibm.pscan.type.ArrayListWritable;
+import com.ibm.pscan.util.IOPath;
 
 import java.io.IOException;
 
@@ -15,10 +17,26 @@ import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
 
 
+/**
+ * Show the clusterID and which nodes are in the related cluster
+ * 
+ * @author Ningxin
+ */
 
-public class Clustering {
+public class ClusterMapReduce {
 	
-	public static class convertMapper extends Mapper<Text, ArrayListWritable<ArrayListWritable<Text>>, Text, Text> {
+	private static ClusterMapReduce getClusterMapReduceInstance=null;
+	
+	private ClusterMapReduce() {}	
+	
+	public static ClusterMapReduce getInstance(){
+		if(getClusterMapReduceInstance==null){
+			getClusterMapReduceInstance=new ClusterMapReduce();
+		}
+		return getClusterMapReduceInstance;
+	}
+	
+	private static class convertMapper extends Mapper<Text, ArrayListWritable<ArrayListWritable<Text>>, Text, Text> {
  
         public void map(Text key, ArrayListWritable<ArrayListWritable<Text>> value, Context context) throws IOException, InterruptedException {
         	ArrayListWritable<Text> label=new ArrayListWritable<Text>(value.get(1));
@@ -28,7 +46,7 @@ public class Clustering {
     }
 	
 	
-	public static class convertReducer extends Reducer<Text, Text, Text, ArrayListWritable<Text>> {
+	private static class convertReducer extends Reducer<Text, Text, Text, ArrayListWritable<Text>> {
 
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {                      
         	ArrayListWritable<Text> output=new ArrayListWritable<Text>();
@@ -41,11 +59,11 @@ public class Clustering {
 	}
 	
 
-	private static boolean convert(Configuration conf, String input,
+	private boolean convert(Configuration conf, String input,
 			String output) throws IOException, ClassNotFoundException, InterruptedException {
 		
 		Job convertJob = new Job(conf, "convert");
-		convertJob.setJarByClass(Clustering.class);
+		convertJob.setJarByClass(ClusterMapReduce.class);
 		convertJob.setMapperClass(convertMapper.class);	    
 		convertJob.setReducerClass(convertReducer .class);
 		convertJob.setPartitionerClass(KeyFieldBasedPartitioner.class);
@@ -66,12 +84,7 @@ public class Clustering {
 		
 	}
 	
-	public static void main(String[] args) throws Exception {
-		Configuration conf = new Configuration();		
-		boolean successConvert=convert(conf,args[0], args[1]);
-		if(successConvert){
-			System.exit(0);
-		}		
-		
+	public void cluster(Configuration conf) throws Exception {	
+		convert(conf,IOPath.CLUSTER_INPUT, IOPath.CLUSTER_OUTPUT);		
 	}
 }

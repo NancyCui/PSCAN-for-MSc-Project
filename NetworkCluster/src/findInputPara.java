@@ -13,9 +13,9 @@ import com.ibm.pscan.io.SequenceFileIO;
 
 public class findInputPara {
 	
-	public ArrayListWritable<ArrayListWritable<Text>> readVertexSimi() throws IOException{
-		String bathPath = "/Users/Nancy/Documents/Java/PSCAN/";
-		String fileSimi=bathPath+"output0-InputPara/part-r-00000";
+	public static ArrayListWritable<ArrayListWritable<Text>> readVertexSimi() throws IOException{
+		String bathPath = "/Users/Nancy/Documents/Java/NetworkCluster/";
+		String fileSimi=bathPath+"output/output0-InputPara/part-r-00000";
 		
 	    Configuration conf = new Configuration();
 	    FileSystem fsSimi = FileSystem.get(URI.create(fileSimi), conf);
@@ -23,7 +23,14 @@ public class findInputPara {
 	    
 	    ArrayListWritable<ArrayListWritable<Text>> simi=SequenceFileIO.readSequenceFileTD(fsSimi, pathSimi, conf);
 		
+	    System.out.println(simi);
+	    
 	    return simi; 	    
+	}
+	
+	public static void main(String[] args) throws Exception {
+		 readVertexSimi();
+		
 	}
 	
 }

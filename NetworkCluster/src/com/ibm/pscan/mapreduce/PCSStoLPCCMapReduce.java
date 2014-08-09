@@ -1,6 +1,7 @@
 package com.ibm.pscan.mapreduce;
 import com.ibm.pscan.type.ArrayListWritable;
 import com.ibm.pscan.type.Edge;
+import com.ibm.pscan.util.IOPath;
 
 import java.io.IOException;
 
@@ -26,16 +27,10 @@ import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
 
 public class PCSStoLPCCMapReduce {
 	
-	private static String basePath = "/Users/Nancy/Documents/Java/NetworkCluster/";
-	private static String inputFile="output/output2-PCSS";
-	private static String outputFile=basePath+"output/output3-PtoL";
-	
 	private static PCSStoLPCCMapReduce getPCSStoLPCCMapReduceInstance=null;
 	
 
-	private PCSStoLPCCMapReduce(){
-		
-	}
+	private PCSStoLPCCMapReduce(){}
 	
 	public static PCSStoLPCCMapReduce getInstance(){
 		if(getPCSStoLPCCMapReduceInstance==null){
@@ -118,9 +113,8 @@ public class PCSStoLPCCMapReduce {
 		
 	}
 	
-	public void formateToLPCC() throws Exception {
-		Configuration conf = new Configuration();		
-		getAdList(conf,inputFile, outputFile);
+	public void formateToLPCC(Configuration conf) throws Exception {	
+		getAdList(conf,IOPath.PTOL_INPUT, IOPath.PTOL_OUTPUT);
 		
 	}
 }

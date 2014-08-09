@@ -1,5 +1,6 @@
 package com.ibm.pscan.mapreduce;
 import com.ibm.pscan.type.ArrayListWritable;
+import com.ibm.pscan.util.IOPath;
 
 import java.io.IOException;
 
@@ -17,21 +18,29 @@ import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
 
 
+/**
+ * Cluster the nodes, if it is a non-member node, tag it.
+ * @author Ningxin
+ */
 
 public class LPCCMapReduce {
 	
-	private static String basePath = "/Users/Nancy/Documents/Java/NetworkCluster/";
-	private static String inputFile=basePath+"output/output3-PtoL";
-	private static String outputFile=basePath+"output/output4-LPCC";
-	private static String output=basePath+"output/output4-LPCC";
-	private static String outputInter=basePath+"output/output5-LPCC";
-	private static String inputFile1=output; //input file for finding non-member nodes
-	private static String inputFile2=basePath+"output/output1-adjacencyList";
-	private static String output_LPCC=basePath+"output/output5-LPCC";
-	
-/*------------------------Find Cluster-------------------------------------------------------------------------------------------------*/	
 	private static int loopCount=0;
 	private static boolean iterateLPCC=true; 
+	
+	private static LPCCMapReduce getLPCCMapReduceInstance=null;
+	
+
+	private LPCCMapReduce(){}
+	
+	public static LPCCMapReduce getInstance(){
+		if(getLPCCMapReduceInstance==null){
+			getLPCCMapReduceInstance=new LPCCMapReduce();
+		}
+		return getLPCCMapReduceInstance;
+	}
+	
+	
 	
 	/**
 	 * Input: <Text, ArrayListWritable>
@@ -40,9 +49,8 @@ public class LPCCMapReduce {
 	 * Output: <Text, ArrayListWritable>
 	 * key' is a vertex ID
 	 * value' is the label or the structure information of the input vertex
-	 * @author Ningxin
 	 */
-	public static class doLPCCMapper extends Mapper<Text, ArrayListWritable<ArrayListWritable<Text>>, Text, ArrayListWritable<ArrayListWritable<Text>>> {		
+	private static class doLPCCMapper extends Mapper<Text, ArrayListWritable<ArrayListWritable<Text>>, Text, ArrayListWritable<ArrayListWritable<Text>>> {		
 		//the {label} is stored into a {} -> {{label}}
 		private ArrayListWritable<ArrayListWritable<Text>> labelValue=new ArrayListWritable<ArrayListWritable<Text>>();
 		
@@ -79,10 +87,9 @@ public class LPCCMapReduce {
 	 * Output: <Text, ArrayListWritable>
 	 * key' is the vertex ID
 	 * value' is the updated structure information of the vertex
-	 * @author Ningxin
-	 *
 	 */
-	public static class doLPCCReducer extends Reducer<Text, ArrayListWritable<ArrayListWritable<Text>>, Text, ArrayListWritable<ArrayListWritable<Text>>> {
+	private static class doLPCCReducer extends Reducer<Text, ArrayListWritable<ArrayListWritable<Text>>, Text, ArrayListWritable<ArrayListWritable<Text>>> {
+		
 		public void reduce(Text key, Iterable<ArrayListWritable<ArrayListWritable<Text>>> values, Context context) throws IOException, InterruptedException {   
 			String newLabel="";
 			String oldLabel="";
@@ -115,23 +122,22 @@ public class LPCCMapReduce {
 		}
 
 	}	
-
-/*------------------------Find Non-member nodes-------------------------------------------------------------------------------------------------*/	
 	
 	/**
+	 * Find Non-member nodes
 	 * Read from the input files and get the key value pair for the reduce process 
-	 * @author Ningxin
 	 */
-	public static class findNonMemberMapper extends Mapper<Text, ArrayListWritable<ArrayListWritable<Text>>, Text, ArrayListWritable<ArrayListWritable<Text>>> {
- 
-        public void map(Text key, ArrayListWritable<ArrayListWritable<Text>> value, Context context) throws IOException, InterruptedException {
+	private static class findNonMemberMapper extends Mapper<Text, ArrayListWritable<ArrayListWritable<Text>>, Text, ArrayListWritable<ArrayListWritable<Text>>> {
+       
+		public void map(Text key, ArrayListWritable<ArrayListWritable<Text>> value, Context context) throws IOException, InterruptedException {
         	Text newKey=new Text(key.toString().replaceAll("	", ""));
         	context.write(newKey, value);           
         }
     }
 	
-	public static class findNonMemberCombiner extends Reducer<Text, ArrayListWritable<ArrayListWritable<Text>>, Text, ArrayListWritable<ArrayListWritable<Text>>>{
-		 public void reduce(Text key, Iterable<ArrayListWritable<ArrayListWritable<Text>>> values, Context context) throws IOException, InterruptedException { 
+	private static class findNonMemberCombiner extends Reducer<Text, ArrayListWritable<ArrayListWritable<Text>>, Text, ArrayListWritable<ArrayListWritable<Text>>>{
+		
+		public void reduce(Text key, Iterable<ArrayListWritable<ArrayListWritable<Text>>> values, Context context) throws IOException, InterruptedException { 
 			 for(ArrayListWritable<ArrayListWritable<Text>> val: values){
 				 context.write(key, val);
 			 }
@@ -149,12 +155,10 @@ public class LPCCMapReduce {
 	 * Value' is the re-formated structural information
 	 * [[inactivated/adList], [clusterID], [adjacency list]]
 	 * The adjacency list is the one before cutting stage
-	 * @author Nancy
-	 *
 	 */
-	public static class findNonMemberReducer extends Reducer<Text, ArrayListWritable<ArrayListWritable<Text>>, Text, ArrayListWritable<ArrayListWritable<Text>>> {
-
-        public void reduce(Text key, Iterable<ArrayListWritable<ArrayListWritable<Text>>> values, Context context) throws IOException, InterruptedException {                      
+	private static class findNonMemberReducer extends Reducer<Text, ArrayListWritable<ArrayListWritable<Text>>, Text, ArrayListWritable<ArrayListWritable<Text>>> {
+        
+		public void reduce(Text key, Iterable<ArrayListWritable<ArrayListWritable<Text>>> values, Context context) throws IOException, InterruptedException {                      
         	ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> newValues=new ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>>();
         	ArrayListWritable<ArrayListWritable<Text>> value=new ArrayListWritable<ArrayListWritable<Text>>();
         	
@@ -200,7 +204,7 @@ public class LPCCMapReduce {
 	
 	
 /*------------------------Configuration of mapperClass and reducerClass-------------------------------------------------------------------------------------------------*/
-	private static boolean doLPCC(Configuration conf, String input,
+	private boolean doLPCC(Configuration conf, String input,
 			String output) throws IOException, ClassNotFoundException, InterruptedException {
 		
 		iterateLPCC=false;
@@ -228,8 +232,8 @@ public class LPCCMapReduce {
 	}
 	
 
-	private static boolean findNonMember(Configuration conf,
-			String inputFile1, String inputFile2, String output_LPCC) throws IOException, ClassNotFoundException, InterruptedException {
+	private boolean findNonMember(Configuration conf,
+			String input1, String input2, String output) throws IOException, ClassNotFoundException, InterruptedException {
 		
 		Job findNonMemberJob = new Job(conf, "cluster-findNonMember");
 		findNonMemberJob.setJarByClass(LPCCMapReduce.class);
@@ -239,7 +243,7 @@ public class LPCCMapReduce {
 		findNonMemberJob.setPartitionerClass(KeyFieldBasedPartitioner.class);
 	    
 		findNonMemberJob.setInputFormatClass(SequenceFileInputFormat.class);
-		//findNonMemberJob.setOutputFormatClass(SequenceFileOutputFormat.class);
+		findNonMemberJob.setOutputFormatClass(SequenceFileOutputFormat.class);
 		
 		findNonMemberJob.setMapOutputKeyClass(Text.class); 
 		findNonMemberJob.setMapOutputValueClass(ArrayListWritable.class); 
@@ -247,16 +251,16 @@ public class LPCCMapReduce {
 		findNonMemberJob.setOutputKeyClass(Text.class);
 		findNonMemberJob.setOutputValueClass(ArrayListWritable.class);
 	    
-	    FileInputFormat.addInputPath(findNonMemberJob, new Path(inputFile1));
-	    FileInputFormat.addInputPath(findNonMemberJob, new Path(inputFile2));
-	    FileOutputFormat.setOutputPath(findNonMemberJob, new Path(output_LPCC));	    
+	    FileInputFormat.addInputPath(findNonMemberJob, new Path(input1));
+	    FileInputFormat.addInputPath(findNonMemberJob, new Path(input2));
+	    FileOutputFormat.setOutputPath(findNonMemberJob, new Path(output));	    
 		
 	    return findNonMemberJob.waitForCompletion(true);
 	}
 	
 /*------------------------Main Method-------------------------------------------------------------------------------------------------*/		
-	public static void LPCC() throws Exception {
-		Configuration conf = new Configuration();
+	public void LPCC(Configuration conf) throws Exception {
+		
 		boolean successLPCC=true;
 		boolean successNonMember;
 		FileSystem fs = FileSystem.get(conf);
@@ -267,19 +271,19 @@ public class LPCCMapReduce {
 		while(successLPCC){
 			while(iterateLPCC){
 				if(loopCount==0){
-					successLPCC=doLPCC(conf,inputFile, outputFile);
+					successLPCC=doLPCC(conf,IOPath.LPCC_INPUT, IOPath.LPCC_OUTPUT);
 					loopCount++;
 				}
 				else if((loopCount%2)==0&&loopCount!=0){
-					fs.delete(new Path(outputFile), true);
-					successLPCC=doLPCC(conf,outputInter, outputFile);
+					fs.delete(new Path(IOPath.LPCC_OUTPUT), true);
+					successLPCC=doLPCC(conf,IOPath.LPCC_OUTPUT2, IOPath.LPCC_OUTPUT);
 					loopCount++;
 				}
 				else{
-					if(fs.exists(new Path(outputInter))){
-						fs.delete(new Path(outputInter),true);
+					if(fs.exists(new Path(IOPath.LPCC_OUTPUT2))){
+						fs.delete(new Path(IOPath.LPCC_OUTPUT2),true);
 					}
-					successLPCC=doLPCC(conf,outputFile, outputInter);
+					successLPCC=doLPCC(conf,IOPath.LPCC_OUTPUT, IOPath.LPCC_OUTPUT2);
 					loopCount++;
 				}
 			}
@@ -288,13 +292,13 @@ public class LPCCMapReduce {
 			 * format the name of the output file
 			 */
 			if(loopCount%2==0&&loopCount!=0){
-				fs.delete(new Path(outputFile),true);
-				fs.rename(new Path(outputInter), new Path(output));
+				fs.delete(new Path(IOPath.LPCC_OUTPUT),true);
+				fs.rename(new Path(IOPath.LPCC_OUTPUT2), new Path(IOPath.LPCC_OUTPUT));
 			}
 			else{
-				fs.rename(new Path(outputFile), new Path(output));
-				if(fs.exists(new Path(outputInter))){
-					fs.delete(new Path(outputInter),true);
+				fs.rename(new Path(IOPath.LPCC_OUTPUT), new Path(IOPath.LPCC_OUTPUT));
+				if(fs.exists(new Path(IOPath.LPCC_OUTPUT2))){
+					fs.delete(new Path(IOPath.LPCC_OUTPUT2),true);
 				}
 			}
 			
@@ -302,14 +306,14 @@ public class LPCCMapReduce {
 			 * Find hubs and outliers in network
 			 */
 			
-			successNonMember=findNonMember(conf,inputFile1, inputFile2, output_LPCC);
+			successNonMember=findNonMember(conf,IOPath.LPCC_OUTPUT, IOPath.LPCC_ADLIST_INPUT, IOPath.LPCC_OUTPUT2);
 			
 			if(successNonMember){
-				fs.delete(new Path(output),true);
-				fs.rename(new Path(output_LPCC), new Path(output));				
+				fs.delete(new Path(IOPath.LPCC_OUTPUT),true);
+				fs.rename(new Path(IOPath.LPCC_OUTPUT2), new Path(IOPath.LPCC_OUTPUT));				
 			}
 			
-			System.exit(0);	
+			break;
 		
 		}		
 		

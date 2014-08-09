@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import com.ibm.pscan.io.CsvFileIO;
 import com.ibm.pscan.io.TxtFileIO;
+import com.ibm.pscan.util.IOPath;
 
 /**
  * Get the participation information in the inputfile
@@ -15,10 +16,6 @@ import com.ibm.pscan.io.TxtFileIO;
  *
  */
 public class GetParticipant {
-	
-	private static String basePath = "/Users/Nancy/Documents/Java/NetworkCluster/";
-	private static String inputFileName=basePath+"ori/Messages.csv";
-	private static String outputFileName=basePath + "input/userRelation2.txt";
 	
 	private static GetParticipant getParticipantInstance=null;
 	
@@ -56,10 +53,10 @@ public class GetParticipant {
 	 * Read the inputfile and write the participant result into txt file
 	 */
 	private void participant() throws IOException{		
-		ArrayList<ArrayList<String>> message=CsvFileIO.readFile(inputFileName);
+		ArrayList<ArrayList<String>> message=CsvFileIO.readFile(IOPath.GETPAR_INPUT);
 		int column = 6; //get the participations data
 		ArrayList<String> participants=getParticipants(message, column);		
-		TxtFileIO.insertFile(outputFileName, participants);
+		TxtFileIO.insertFile(IOPath.GETPAR_OUTPUT, participants);
 		System.out.println("Finish Writing");		
 	}
 

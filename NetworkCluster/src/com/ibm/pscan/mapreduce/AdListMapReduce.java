@@ -1,6 +1,7 @@
 package com.ibm.pscan.mapreduce;
 
 import com.ibm.pscan.type.ArrayListWritable;
+import com.ibm.pscan.util.IOPath;
 
 import java.io.IOException;
 
@@ -28,18 +29,9 @@ import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
 
 public class AdListMapReduce {
 	
-	private static String basePath = "/Users/Nancy/Documents/Java/NetworkCluster/";
-	private static String inputFile="input";
-	private static String interOutputFile=basePath+"output/output";
-	private static String outputFile=basePath+"output/output1-adjacencyList";
-	private static String relationshipFileName=basePath+"output/output2-relationship";
-	
-	
 	private static AdListMapReduce getAdListMapReduceInstance=null;
 	
-	private AdListMapReduce() {
-		
-	}	
+	private AdListMapReduce() {}	
 	
 	public static AdListMapReduce getInstance(){
 		if(getAdListMapReduceInstance==null){
@@ -233,23 +225,23 @@ public class AdListMapReduce {
 		
 	}
 
-	public void adList() throws Exception {
-		Configuration conf = new Configuration();
+	public void adList(Configuration conf) throws Exception {
+		
 		boolean success=false;
 		//delete the duplicate records in the original file and get the neighbor relation
-		boolean successfulFindNeighbor=findNeighbor(conf,inputFile, interOutputFile);
+		boolean successfulFindNeighbor=findNeighbor(conf,IOPath.ADLIST_INPUT, IOPath.ADLIST_NEIGHBOR_OUTPUT);
 		if(successfulFindNeighbor){
-			boolean successDeleteDuplication=deleteDuplication(conf,interOutputFile,relationshipFileName);
+			boolean successDeleteDuplication=deleteDuplication(conf,IOPath.ADLIST_NEIGHBOR_OUTPUT,IOPath.ADLIST_RELATION_OUTPUT);
 			//get the adjustList of each node
 			if(successDeleteDuplication){
-				success=getAdjacencyList(conf,relationshipFileName, outputFile);
+				success=getAdjacencyList(conf,IOPath.ADLIST_RELATION_OUTPUT, IOPath.ADLIST_OUTPUT);
 			}
 		}
 	
 		if(success){
 			FileSystem fs = FileSystem.get(conf);
-			fs.delete(new Path(interOutputFile),true);
-			fs.delete(new Path(relationshipFileName),true);
+			fs.delete(new Path(IOPath.ADLIST_NEIGHBOR_OUTPUT),true);
+			fs.delete(new Path(IOPath.ADLIST_RELATION_OUTPUT),true);
 		}
 	}
 

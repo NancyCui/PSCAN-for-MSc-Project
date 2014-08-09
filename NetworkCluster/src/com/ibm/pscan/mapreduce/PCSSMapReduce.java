@@ -1,6 +1,7 @@
 package com.ibm.pscan.mapreduce;
 import com.ibm.pscan.type.ArrayListWritable;
 import com.ibm.pscan.type.Edge;
+import com.ibm.pscan.util.IOPath;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,10 +29,6 @@ import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
  */
 
 public class PCSSMapReduce {
-	
-	private static String basePath = "/Users/Nancy/Documents/Java/NetworkCluster/";
-	private static String inputFile="output/output1-adjacencyList";
-	private static String outputFile=basePath+"output/output2-PCSS";
 	
 	private static double thresHold; //cut off the edges with the structural similarity less than threshold
 	private static PCSSMapReduce getPCSSMapReduceInstance=null;
@@ -153,9 +150,8 @@ public class PCSSMapReduce {
 		
 	}
 	
-	public void PCSS() throws Exception {
-		Configuration conf = new Configuration();
-		doPCSS(conf,inputFile, outputFile);	
+	public void PCSS(Configuration conf) throws Exception {
+		doPCSS(conf,IOPath.PCSS_INPUT, IOPath.PCSS_OUTPUT);	
 		
 	}
 }

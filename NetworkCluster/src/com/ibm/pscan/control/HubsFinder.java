@@ -1,3 +1,4 @@
+package com.ibm.pscan.control;
 import com.ibm.pscan.type.ArrayListWritable;
 
 import java.io.IOException;
@@ -86,11 +87,11 @@ public class HubsFinder {
 	}
 	
 
-	public static void main(String[] args) throws IOException {
+	public static void findHubs() throws IOException {
 		
-		String bathPath = "/Users/Nancy/Documents/Java/PSCAN/";
-		String fileVertex=bathPath+"output4-LPCC/part-r-00000";
-		String fileCluster=bathPath+"output5-Clusters/part-r-00000";
+		String bathPath = "/Users/Nancy/Documents/Java/NetworkCluster/";
+		String fileVertex=bathPath+"output/output4-LPCC/part-r-00000";
+		String fileCluster=bathPath+"output/output5-Clusters/part-r-00000";
 		
 	    Configuration conf = new Configuration();
 	    FileSystem fsVertex = FileSystem.get(URI.create(fileVertex), conf);
