@@ -225,16 +225,16 @@ public class AdListMapReduce {
 		
 	}
 
-	public void adList(Configuration conf) throws Exception {
+	public void adList(Configuration conf, String inputFile, String outputFile) throws Exception {
 		
 		boolean success=false;
 		//delete the duplicate records in the original file and get the neighbor relation
-		boolean successfulFindNeighbor=findNeighbor(conf,IOPath.ADLIST_INPUT, IOPath.ADLIST_NEIGHBOR_OUTPUT);
+		boolean successfulFindNeighbor=findNeighbor(conf,inputFile, IOPath.ADLIST_NEIGHBOR_OUTPUT);
 		if(successfulFindNeighbor){
 			boolean successDeleteDuplication=deleteDuplication(conf,IOPath.ADLIST_NEIGHBOR_OUTPUT,IOPath.ADLIST_RELATION_OUTPUT);
 			//get the adjustList of each node
 			if(successDeleteDuplication){
-				success=getAdjacencyList(conf,IOPath.ADLIST_RELATION_OUTPUT, IOPath.ADLIST_OUTPUT);
+				success=getAdjacencyList(conf,IOPath.ADLIST_RELATION_OUTPUT, outputFile);
 			}
 		}
 	

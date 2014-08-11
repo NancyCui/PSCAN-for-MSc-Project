@@ -1,7 +1,7 @@
 package com.ibm.pscan.mapreduce;
+
 import com.ibm.pscan.type.ArrayListWritable;
 import com.ibm.pscan.type.Edge;
-import com.ibm.pscan.util.IOPath;
 
 import java.io.IOException;
 
@@ -113,8 +113,8 @@ public class PCSStoLPCCMapReduce {
 		
 	}
 	
-	public void formateToLPCC(Configuration conf) throws Exception {	
-		getAdList(conf,IOPath.PTOL_INPUT, IOPath.PTOL_OUTPUT);
+	public void formateToLPCC(Configuration conf, String inputFile, String outputFile) throws Exception {	
+		getAdList(conf,inputFile, outputFile);
 		
 	}
 }

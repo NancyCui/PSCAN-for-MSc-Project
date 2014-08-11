@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
+import org.apache.hadoop.io.Text;
+
 import com.csvreader.CsvReader;
+import com.ibm.pscan.type.ArrayListWritable;
 
 /**
  * Read the CSV file store it into an ArrayList<ArrayList<String>>
@@ -53,5 +56,15 @@ public class CsvFileIO {
 		}
 		return content;
 	}
+	
+	/**
+	 * Write the output to the CSV file
+	 * 
+	 * @param filename content
+	 */
+	public static void writeFile(String filename, ArrayListWritable<ArrayListWritable<Text>> content){
+		
+	}
+	
 	
 }

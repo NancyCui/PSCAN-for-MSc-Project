@@ -4,6 +4,27 @@ public class IOPath {
 
 	private static final String BASE_PATH = "/Users/Nancy/Documents/Java/NetworkCluster/";
 	
+	/**
+	 * Input and Output Files for finding input parameter
+	 */	
+	//For ADListMapReduce.java
+	public static final String ADLIST_INPUT_0=BASE_PATH+"input";
+	public static final String ADLIST_OUTPUT_0=BASE_PATH+"output/output0-adjacencyList";
+	
+	//For PCSSMapReduce.java
+	public static final String PCSS_INPUT_0=BASE_PATH+"output/output0-adjacencyList";
+	public static final String PCSS_OUTPUT_0=BASE_PATH+"output/output0-PCSS";
+	
+	//For InputParaMapReduce.java
+	public static final String InputPara_INPUT=BASE_PATH+"output/output0-PCSS";
+	public static final String InputPara_OUTPUT=BASE_PATH+"output/output0-InputPara";
+
+	
+	
+	/**
+	 * Input and Output Files for PSCAN.java
+	 */
+	
 	//For GetParticipant.java
 	public static final String GETPAR_INPUT=BASE_PATH+"ori/Messages.csv";
 	public static final String GETPAR_OUTPUT=BASE_PATH + "input/userRelation2.txt";

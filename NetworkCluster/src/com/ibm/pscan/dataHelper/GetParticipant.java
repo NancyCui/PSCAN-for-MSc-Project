@@ -64,7 +64,5 @@ public class GetParticipant {
 	public void relationship() throws IOException {
 		participant();		
 	}
-
-
 	
 }

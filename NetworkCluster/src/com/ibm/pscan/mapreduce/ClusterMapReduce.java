@@ -1,6 +1,5 @@
 package com.ibm.pscan.mapreduce;
 import com.ibm.pscan.type.ArrayListWritable;
-import com.ibm.pscan.util.IOPath;
 
 import java.io.IOException;
 
@@ -84,7 +83,7 @@ public class ClusterMapReduce {
 		
 	}
 	
-	public void cluster(Configuration conf) throws Exception {	
-		convert(conf,IOPath.CLUSTER_INPUT, IOPath.CLUSTER_OUTPUT);		
+	public void cluster(Configuration conf, String inputFile, String outputFile) throws Exception {	
+		convert(conf,inputFile, outputFile);		
 	}
 }

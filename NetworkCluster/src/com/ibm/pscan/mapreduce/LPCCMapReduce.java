@@ -259,7 +259,7 @@ public class LPCCMapReduce {
 	}
 	
 /*------------------------Main Method-------------------------------------------------------------------------------------------------*/		
-	public void LPCC(Configuration conf) throws Exception {
+	public void LPCC(Configuration conf, String inputFile, String outputFile) throws Exception {
 		
 		boolean successLPCC=true;
 		boolean successNonMember;
@@ -271,19 +271,19 @@ public class LPCCMapReduce {
 		while(successLPCC){
 			while(iterateLPCC){
 				if(loopCount==0){
-					successLPCC=doLPCC(conf,IOPath.LPCC_INPUT, IOPath.LPCC_OUTPUT);
+					successLPCC=doLPCC(conf,inputFile, outputFile);
 					loopCount++;
 				}
 				else if((loopCount%2)==0&&loopCount!=0){
-					fs.delete(new Path(IOPath.LPCC_OUTPUT), true);
-					successLPCC=doLPCC(conf,IOPath.LPCC_OUTPUT2, IOPath.LPCC_OUTPUT);
+					fs.delete(new Path(outputFile), true);
+					successLPCC=doLPCC(conf,IOPath.LPCC_OUTPUT2, outputFile);
 					loopCount++;
 				}
 				else{
 					if(fs.exists(new Path(IOPath.LPCC_OUTPUT2))){
 						fs.delete(new Path(IOPath.LPCC_OUTPUT2),true);
 					}
-					successLPCC=doLPCC(conf,IOPath.LPCC_OUTPUT, IOPath.LPCC_OUTPUT2);
+					successLPCC=doLPCC(conf,outputFile, IOPath.LPCC_OUTPUT2);
 					loopCount++;
 				}
 			}
@@ -292,11 +292,10 @@ public class LPCCMapReduce {
 			 * format the name of the output file
 			 */
 			if(loopCount%2==0&&loopCount!=0){
-				fs.delete(new Path(IOPath.LPCC_OUTPUT),true);
-				fs.rename(new Path(IOPath.LPCC_OUTPUT2), new Path(IOPath.LPCC_OUTPUT));
+				fs.delete(new Path(outputFile),true);
+				fs.rename(new Path(IOPath.LPCC_OUTPUT2), new Path(outputFile));
 			}
 			else{
-				fs.rename(new Path(IOPath.LPCC_OUTPUT), new Path(IOPath.LPCC_OUTPUT));
 				if(fs.exists(new Path(IOPath.LPCC_OUTPUT2))){
 					fs.delete(new Path(IOPath.LPCC_OUTPUT2),true);
 				}
@@ -306,11 +305,11 @@ public class LPCCMapReduce {
 			 * Find hubs and outliers in network
 			 */
 			
-			successNonMember=findNonMember(conf,IOPath.LPCC_OUTPUT, IOPath.LPCC_ADLIST_INPUT, IOPath.LPCC_OUTPUT2);
+			successNonMember=findNonMember(conf,outputFile, IOPath.LPCC_ADLIST_INPUT, IOPath.LPCC_OUTPUT2);
 			
 			if(successNonMember){
-				fs.delete(new Path(IOPath.LPCC_OUTPUT),true);
-				fs.rename(new Path(IOPath.LPCC_OUTPUT2), new Path(IOPath.LPCC_OUTPUT));				
+				fs.delete(new Path(outputFile),true);
+				fs.rename(new Path(IOPath.LPCC_OUTPUT2), new Path(outputFile));				
 			}
 			
 			break;

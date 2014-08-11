@@ -1,7 +1,6 @@
 package com.ibm.pscan.mapreduce;
 import com.ibm.pscan.type.ArrayListWritable;
 import com.ibm.pscan.type.Edge;
-import com.ibm.pscan.util.IOPath;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -150,8 +149,8 @@ public class PCSSMapReduce {
 		
 	}
 	
-	public void PCSS(Configuration conf) throws Exception {
-		doPCSS(conf,IOPath.PCSS_INPUT, IOPath.PCSS_OUTPUT);	
+	public void PCSS(Configuration conf, String inputFile, String outputFile) throws Exception {
+		doPCSS(conf,inputFile, outputFile);	
 		
 	}
 }
