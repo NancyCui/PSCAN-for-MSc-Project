@@ -16,9 +16,12 @@ public class IOPath {
 	public static final String PCSS_OUTPUT_0=BASE_PATH+"output/output0-PCSS";
 	
 	//For InputParaMapReduce.java
-	public static final String InputPara_INPUT=BASE_PATH+"output/output0-PCSS";
-	public static final String InputPara_OUTPUT=BASE_PATH+"output/output0-InputPara";
+	public static final String INPUTPARA_INPUT=BASE_PATH+"output/output0-PCSS";
+	public static final String INPUTPARA_OUTPUT=BASE_PATH+"output/output0-InputPara";
 
+	//For FindInputPara.java
+	public static final String FINDINPUTPARA_INPUT=BASE_PATH+"output/output0-InputPara/part-r-00000";
+	public static final String FINDINPUTPARA_OUTPUT=BASE_PATH+"output/output0-Similarity-CSV";
 	
 	
 	/**

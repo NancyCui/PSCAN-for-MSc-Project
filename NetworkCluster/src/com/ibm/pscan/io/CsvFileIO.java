@@ -1,17 +1,17 @@
 package com.ibm.pscan.io;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-
-import org.apache.hadoop.io.Text;
+import java.util.List;
 
 import com.csvreader.CsvReader;
-import com.ibm.pscan.type.ArrayListWritable;
 
 /**
  * Read the CSV file store it into an ArrayList<ArrayList<String>>
- * Write specific data into HBASE
  * 
  * @author Ningxin
  *
@@ -62,9 +62,27 @@ public class CsvFileIO {
 	 * 
 	 * @param filename content
 	 */
-	public static void writeFile(String filename, ArrayListWritable<ArrayListWritable<Text>> content){
-		
+	public static void writeFile(String filename, List<Double> contents){
+		try{
+			File file=new File(filename);
+			if(!file.exists()){
+				file.createNewFile();
+			}
+			String output = "";
+			for(int i=0;i<contents.size();i++){
+				output+=contents.get(i).toString();
+				output+=(i==contents.size()-1?"":",");
+				output+=lineSep;
+			}					
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file,true));
+			writer.write(output);
+			writer.flush();
+			writer.close();			
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
-	
+
 	
 }

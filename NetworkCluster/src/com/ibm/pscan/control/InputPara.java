@@ -2,6 +2,7 @@ package com.ibm.pscan.control;
 
 import org.apache.hadoop.conf.Configuration;
 
+import com.ibm.pscan.dataHelper.FindInputPara;
 import com.ibm.pscan.mapreduce.AdListMapReduce;
 import com.ibm.pscan.mapreduce.InputParaMapReduce;
 import com.ibm.pscan.mapreduce.PCSSMapReduce;
@@ -25,7 +26,10 @@ public class InputPara {
 		
 		//Get the largest similarity for each node
 		InputParaMapReduce inputParaMapReduce=InputParaMapReduce.getInstance();
-		inputParaMapReduce.getSimiForFindInput(conf,IOPath.InputPara_INPUT, IOPath.InputPara_OUTPUT);
+		inputParaMapReduce.getSimiForFindInput(conf,IOPath.INPUTPARA_INPUT, IOPath.INPUTPARA_OUTPUT);
+		
+		FindInputPara.findInputPara(IOPath.FINDINPUTPARA_INPUT);
+		
 
 	}
 
