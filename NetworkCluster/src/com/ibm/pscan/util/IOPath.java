@@ -21,7 +21,7 @@ public class IOPath {
 
 	//For FindInputPara.java
 	public static final String FINDINPUTPARA_INPUT=BASE_PATH+"output/output0-InputPara/part-r-00000";
-	public static final String FINDINPUTPARA_OUTPUT=BASE_PATH+"output/output0-Similarity-CSV";
+	public static final String FINDINPUTPARA_OUTPUT=BASE_PATH+"output/output0-Similarity-CSV.csv";
 	
 	
 	/**

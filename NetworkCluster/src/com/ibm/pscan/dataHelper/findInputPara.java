@@ -38,9 +38,7 @@ public class FindInputPara {
 	    Path pathSimi = new Path(inputFile);
 	    
 	    ArrayListWritable<ArrayListWritable<Text>> simi=SequenceFileIO.readSequenceFileTD(fsSimi, pathSimi, conf);
-		
-	    System.out.println(simi);
-	    
+
 	    getSimi(simi);
 	    
 	}
@@ -63,9 +61,9 @@ public class FindInputPara {
 		ArrayList<Integer> length_unitLength=findLength(simiLength);
 		int length=length_unitLength.get(0);
 		int unit_Length=length_unitLength.get(1);
-
-		List<Double> simiSublist=similarity.subList(0, length);
 		
+		List<Double> simiSublist=similarity.subList(0, length);
+
 		//If unit-length > 1, calculate the average similarity value for each unit
 		List<Double> finalSimi=new ArrayList<Double>();
 		if(unit_Length>1){
@@ -82,11 +80,18 @@ public class FindInputPara {
 	/**
 	 * Calculate the average similarity for each unit
 	 * 
-	 * @param simiSublist
-	 * @param unit_Length 
+	 * @param simiSublist unit_Length
 	 */
 	private static List<Double> averageSimi(List<Double> simiSublist, int unit_Length) {
 		List<Double> finalSimi=new ArrayList<Double>();
+		for(int i=0; (i+unit_Length-1)<simiSublist.size();i=(i+unit_Length)){
+			List<Double> subList=simiSublist.subList(i, i+unit_Length);
+			double average=0.0;
+			for(int j=0; j<subList.size(); j++){
+				average+=subList.get(j);
+			}
+			finalSimi.add((average/unit_Length));
+		}
 		
 		return finalSimi;
 	}
@@ -110,7 +115,7 @@ public class FindInputPara {
 			unitLength=(int)(sampleFloor);
 			length=(int)(sampleFloor*10);			
 		}
-		else if(floor>1.0&&floor<100.0){
+		else if(floor>=1.0&&floor<100.0){
 			//when the dataset has 10-999 nodes
 			unitLength=(int)(floor);
 			length=(int)(floor*10);
