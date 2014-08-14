@@ -2,7 +2,6 @@ package com.ibm.pscan.dataHelper;
 import com.ibm.pscan.type.ArrayListWritable;
 import com.ibm.pscan.util.IOPath;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +12,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 
+import com.ibm.pscan.gui.LineChartController;
 import com.ibm.pscan.io.CsvFileIO;
 import com.ibm.pscan.io.SequenceFileIO;
 
@@ -29,9 +29,9 @@ public class FindInputPara {
 	 * Read the file and get the similarity for each node
 	 * 
 	 * @param inputFile
-	 * @throws IOException
+	 * @throws Exception 
 	 */
-	private static void readVertexSimi(String inputFile) throws IOException{
+	private static void readVertexSimi(String inputFile) throws Exception{
 		
 	    Configuration conf = new Configuration();
 	    FileSystem fsSimi = FileSystem.get(URI.create(inputFile), conf);
@@ -48,8 +48,9 @@ public class FindInputPara {
 	 * Store the first 10% similarity into an ArrayList<Double>
 	 * 
 	 * @param simi
+	 * @throws Exception 
 	 */
-	private static void getSimi(ArrayListWritable<ArrayListWritable<Text>> simi) {
+	private static void getSimi(ArrayListWritable<ArrayListWritable<Text>> simi) throws Exception {
 		ArrayList<Double> similarity= new ArrayList<Double>();
 		for(ArrayListWritable<Text> s: simi){
 			similarity.add(Double.parseDouble(s.get(1).toString()));
@@ -74,6 +75,8 @@ public class FindInputPara {
 		}
 	
 		CsvFileIO.writeFile(IOPath.FINDINPUTPARA_OUTPUT, finalSimi);
+		
+		LineChartController.drawLineChart(finalSimi);
 		
 	}
 
