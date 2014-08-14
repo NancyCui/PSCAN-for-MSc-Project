@@ -1,5 +1,6 @@
 package com.ibm.pscan.dataHelper;
 import com.ibm.pscan.type.ArrayListWritable;
+import com.ibm.pscan.util.IOPath;
 
 import java.io.IOException;
 import java.net.URI;
@@ -95,10 +96,9 @@ public class HubsFinder {
 	
 
 	public static void findHubs() throws IOException {
-		
-		String bathPath = "/Users/Nancy/Documents/Java/NetworkCluster/";
-		String fileVertex=bathPath+"output/output4-LPCC/part-r-00000";
-		String fileCluster=bathPath+"output/output5-Clusters/part-r-00000";
+
+		String fileVertex=IOPath.HUBFINDER_INPUT;
+		String fileCluster=IOPath.HUBFINDER_OUTPUT;;
 		
 	    Configuration conf = new Configuration();
 	    FileSystem fsVertex = FileSystem.get(URI.create(fileVertex), conf);

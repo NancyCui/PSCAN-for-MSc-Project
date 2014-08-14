@@ -12,7 +12,7 @@ import com.ibm.pscan.util.IOPath;
 
 public class PSCAN {
 	
-	private static double thresHold=0.8; //cut off the edges with the structural similarity less than threshold
+	private static double thresHold=0.7; //cut off the edges with the structural similarity less than threshold
 	
 	/**
 	 * PSCAN Algorithm
