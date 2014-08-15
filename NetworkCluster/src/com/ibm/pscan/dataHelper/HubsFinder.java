@@ -115,5 +115,7 @@ public class HubsFinder {
 	    for(int i=0;i<output.size();i++){
 	    	System.out.println(output.get(i).toString());
 	    }
+	    
+	    
 	  }
 }

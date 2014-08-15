@@ -244,5 +244,9 @@ public class AdListMapReduce {
 			fs.delete(new Path(IOPath.ADLIST_RELATION_OUTPUT),true);
 		}
 	}
+	
+	public void deleteDup(Configuration conf, String inputFile, String outputFile) throws Exception {		
+		deleteDuplication(conf,inputFile,outputFile);
+	}
 
 }
