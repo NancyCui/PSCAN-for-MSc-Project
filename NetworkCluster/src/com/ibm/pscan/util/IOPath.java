@@ -6,12 +6,12 @@ import java.util.Calendar;
 
 public class IOPath {
 	
-	private static DateFormat dateFormat = new SimpleDateFormat("HH.mm.ss");
+	private static DateFormat dateFormat = new SimpleDateFormat("YYYY_MM_dd-HH.mm.ss");
 	private static Calendar cal = Calendar.getInstance();
 	private static String DATE=dateFormat.format(cal.getTime());
 
-	private static final String BASE_PATH="/Users/Nancy/Documents/Java/NetworkCluster/";
-	private static final String OUTPUT_BASE_PATH = "/Users/Nancy/Documents/Java/NetworkCluster/output_"+DATE+"/";
+	private static final String BASE_PATH=Config.BASE_PATH;
+	private static final String OUTPUT_BASE_PATH = BASE_PATH+"output_"+DATE+"/";
 
 	
 	/**

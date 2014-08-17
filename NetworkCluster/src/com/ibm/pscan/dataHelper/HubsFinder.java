@@ -1,4 +1,5 @@
 package com.ibm.pscan.dataHelper;
+
 import com.ibm.pscan.type.ArrayListWritable;
 import com.ibm.pscan.util.IOPath;
 
@@ -174,10 +175,15 @@ public class HubsFinder {
 	    }
 	    
 	    Map<String,ArrayList<String>> clusterMember=getClusterMembers(output);
-	    
 	    System.out.println(clusterMember);
-	    
-	    
+	    	    
+//	    for (Entry<String, ArrayList<String>> entry : clusterMember.entrySet()) {
+//	    	   String key = entry.getKey().toString();
+//	    	   ArrayList<String> value = entry.getValue();
+//	    	   value.add(0, key);
+//	    	   System.out.println("key=" + key + " value=" + value);
+//	   }
+
 	  }
 
 

@@ -8,11 +8,12 @@ import com.ibm.pscan.mapreduce.ClusterMapReduce;
 import com.ibm.pscan.mapreduce.LPCCMapReduce;
 import com.ibm.pscan.mapreduce.PCSSMapReduce;
 import com.ibm.pscan.mapreduce.PCSStoLPCCMapReduce;
+import com.ibm.pscan.util.Config;
 import com.ibm.pscan.util.IOPath;
 
 public class PSCAN {
 	
-	private static double thresHold=0.7; //cut off the edges with the structural similarity less than threshold
+	private static double thresHold=Config.thresHold; //cut off the edges with the structural similarity less than threshold
 	
 	/**
 	 * PSCAN Algorithm
