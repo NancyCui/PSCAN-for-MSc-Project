@@ -4,6 +4,10 @@ import com.ibm.pscan.util.IOPath;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -14,6 +18,7 @@ import com.ibm.pscan.io.SequenceFileIO;
 
 /**
  * Find the hubs and outliners of the cluster
+ * Start from "findHubs()"
  * 
  * @author Ningxin
  */
@@ -94,6 +99,58 @@ public class HubsFinder {
 		return clusterNo;
 	}
 	
+	/**
+	 * Put each clusterID and cluster member into hashmap
+	 * The key is the clusterID 
+	 * The value is an arraylist which contains the nodeID of each member
+	 * 
+	 * @param output
+	 */
+	private static Map<String, ArrayList<String>> getClusterMembers(
+			ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> output) {
+		//store the clusterID and memberID
+		Map<String,ArrayList<String>> clusterMember= new HashMap<String,ArrayList<String>>();		
+		for(ArrayListWritable<ArrayListWritable<Text>> o: output){
+			String ownID=o.get(0).get(0).toString();
+			//If the node belongs to a cluster
+			if(o.get(1).get(0).toString().equals("members")){
+				String clusterID=o.get(2).toString();
+				clusterMember=putInHashMap(clusterMember,clusterID, ownID);
+			}
+			//If the node is either a "hubs" or "outliners"
+			else{
+				if(o.get(2).get(0).toString().equals("hubs")){
+					clusterMember=putInHashMap(clusterMember,"hubs", ownID);
+				}
+				else{
+					clusterMember=putInHashMap(clusterMember,"outliners", ownID);
+				}
+			}
+		}
+		return clusterMember;		
+	}
+
+	/**
+	 * Put key value pair to the hashmap
+	 * 
+	 * @param clusterMember clusterID clusterMember
+	 */
+	private static Map<String, ArrayList<String>> putInHashMap(
+		Map<String, ArrayList<String>> clusterMember, String clusterID, String ownID) {
+		
+		if(clusterMember.containsKey(clusterID)){
+			ArrayList<String> value=clusterMember.get(clusterID);
+			value.add(ownID);
+			Collections.sort(value);
+			clusterMember.put(clusterID, value);
+		}
+		else{
+			ArrayList<String> value=new ArrayList<String>();
+			value.add(ownID);
+			clusterMember.put(clusterID, value);
+		}
+		return clusterMember;
+	}
 
 	public static void findHubs() throws IOException {
 
@@ -116,6 +173,15 @@ public class HubsFinder {
 	    	System.out.println(output.get(i).toString());
 	    }
 	    
+	    Map<String,ArrayList<String>> clusterMember=getClusterMembers(output);
+	    
+	    System.out.println(clusterMember);
+	    
 	    
 	  }
+
+
+
+
+
 }
