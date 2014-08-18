@@ -15,7 +15,7 @@ public class Config {
 	
 	public static final String YAMMER_PATH="https://www.yammer.com/api/v1/export?since="+since+"&model="+model+"&access_token="+access_token;
 	//BASE_PATH for the output files and input files
-	public static final String BASE_PATH="/Users/Nancy/Documents/Java/NetworkCluster/";
+	public static final String BASE_PATH="pscan/";
 	//thresHold for PSCAN
 	public static final double thresHold=0.7;
 	//Upload to Azure
@@ -24,7 +24,7 @@ public class Config {
 		        + "AccountName=ibmyammer;"
 		        + "AccountKey=reNtloLAIW9zCqudTCHay2PSMToNM5TLtN010F9lwwkm59xPjk7oWYgXDVmf/cVB931QA8GORQ0gJilqg0vULQ==";
 	
-	public static final String CONTAINER_NAME="pscan-ori";
-	public static final String STORAGE_FILE_NAME="Messages.csv";
+	public static final String CONTAINER_NAME="ningxin";
+	public static final String STORAGE_FILE_NAME=BASE_PATH+"ori/Messages.csv";
 	
 }
