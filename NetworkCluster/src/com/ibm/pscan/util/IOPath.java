@@ -12,7 +12,15 @@ public class IOPath {
 
 	private static final String BASE_PATH=Config.BASE_PATH;
 	private static final String OUTPUT_BASE_PATH = BASE_PATH+"output_"+DATE+"/";
-
+	
+	/**
+	 * For YammerIO.java & Unzip.java & YammerToAzure.java
+	 */
+	public static final String ZIP_BASE=Config.BASE_PATH+"/yammer";
+	public static final String ZIP_FILE=ZIP_BASE+"/message.zip";
+	public static final String UNZIP_FILE=ZIP_BASE+"/message/";;
+	public static final String INPUT_FILE_PATH=UNZIP_FILE+"/Messages.csv";
+	
 	
 	/**
 	 * Input and Output Files for finding participant

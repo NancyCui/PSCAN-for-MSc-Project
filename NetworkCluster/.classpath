@@ -16,5 +16,8 @@
 	<classpathentry kind="lib" path="/usr/local/Cellar/hadoop/1.2.1/libexec/lib/commons-httpclient-3.0.1.jar"/>
 	<classpathentry kind="lib" path="/usr/local/Cellar/hadoop/1.2.1/libexec/lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="/Users/Nancy/Documents/Java/NetworkCluster/lib/javacsv2/javacsv.jar"/>
+	<classpathentry kind="lib" path="/Users/Nancy/Documents/Java/NetworkCluster/lib/jackson-core-2.4.2.jar"/>
+	<classpathentry kind="lib" path="/Users/Nancy/Documents/Java/NetworkCluster/lib/commons-lang3-3.3.2/commons-lang3-3.3.2.jar"/>
+	<classpathentry kind="lib" path="/Users/Nancy/Documents/Java/NetworkCluster/lib/slf4j-api-1.7.7.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
