@@ -27,8 +27,9 @@ public class FormatInput {
 		
 		GetParticipant getParti=GetParticipant.getInstance();
 		getParti.relationship();
-		AdListMapReduce adListMapReduce=AdListMapReduce.getInstance();
-		adListMapReduce.deleteDup(conf, IOPath.GETPAR_OUTPUT_REPLY, IOPath.GETPAR_OUTPUT_REPLY_NODUP);
+		
+		AdListMapReduce.deleteDup(conf, IOPath.GETPAR_OUTPUT_REPLY, IOPath.GETPAR_OUTPUT_REPLY_NODUP);
+		
 		ParticipantMapReduce participantMapReduce=ParticipantMapReduce.getInstance();
 		participantMapReduce.getSenderReplyer(conf, IOPath.GETPAR_OUTPUT_REPLY_NODUP, IOPath.GETPAR_OUTPUT_ID);
 		

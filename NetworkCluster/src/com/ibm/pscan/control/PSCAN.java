@@ -24,8 +24,7 @@ public class PSCAN {
 		
 		//get the adjacency list, which will be the input of PCSS
 		//input: conf, inputFile, outputFile
-		AdListMapReduce adListMapReduce=AdListMapReduce.getInstance();
-		adListMapReduce.adList(conf, IOPath.ADLIST_INPUT, IOPath.ADLIST_OUTPUT);
+		AdListMapReduce.adList(conf, IOPath.ADLIST_INPUT, IOPath.ADLIST_OUTPUT);
 		
 		//calculate the structural similarity and cutting the edges whose similarity less than thresHold
 		PCSSMapReduce pcssMapReduce=PCSSMapReduce.getInstance(thresHold);

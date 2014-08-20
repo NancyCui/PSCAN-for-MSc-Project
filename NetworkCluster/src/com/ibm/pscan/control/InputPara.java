@@ -17,8 +17,8 @@ public class InputPara {
 		
 		//get the adjacency list, which will be the input of PCSS
 		//input: conf, inputFile, outputFile
-		AdListMapReduce adListMapReduce=AdListMapReduce.getInstance();
-		adListMapReduce.adList(conf, IOPath.ADLIST_INPUT_0, IOPath.ADLIST_OUTPUT_0);
+	
+		AdListMapReduce.adList(conf, IOPath.ADLIST_INPUT_0, IOPath.ADLIST_OUTPUT_0);
 		
 		//calculate the structural similarity
 		PCSSMapReduce pcssMapReduce=PCSSMapReduce.getInstance(thresHold);

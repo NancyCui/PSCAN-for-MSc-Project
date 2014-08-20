@@ -28,22 +28,12 @@ import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
  */
 
 public class AdListMapReduce {
-	
-	private static AdListMapReduce getAdListMapReduceInstance=null;
-	
-	private AdListMapReduce() {}	
-	
-	public static AdListMapReduce getInstance(){
-		if(getAdListMapReduceInstance==null){
-			getAdListMapReduceInstance=new AdListMapReduce();
-		}
-		return getAdListMapReduceInstance;
-	}
+
 	
 	/**
 	 * Delete the duplicate lines in the input files.
 	 */
-	private static class deleteDuplicationMapper extends Mapper<Text, Text, Text, Text> {
+	public static class deleteDuplicationMapper extends Mapper<Text, Text, Text, Text> {
     	private Text userRelationID=new Text();
  
         public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
@@ -55,7 +45,7 @@ public class AdListMapReduce {
 	/**
 	 * Delete the duplicate items
 	 */
-	private static class deleteDuplicationReducer extends Reducer<Text, Text, Text, Text> {
+	public static class deleteDuplicationReducer extends Reducer<Text, Text, Text, Text> {
 
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {                      
         	context.write(key, new Text(""));
@@ -66,7 +56,7 @@ public class AdListMapReduce {
 	 * For each key(fromID, toID)
 	 * Write not only the key(fromID, toID) but also key(toID, fromID)
 	 */
-	private static class findNeighborReducer extends Reducer<Text, Text, Text, Text> {
+	public static class findNeighborReducer extends Reducer<Text, Text, Text, Text> {
 		private Text invertKey=new Text(); //store the invert relationship, Example: (fromID, toID)->(toID, fromID)
 		 
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {                      
@@ -87,7 +77,7 @@ public class AdListMapReduce {
 	/**
 	 * Invert the key value pair and add to the original file
 	 */
-	private static class getAdjacencyListMapper extends Mapper<Text, Text, Text, Text> {
+	public static class getAdjacencyListMapper extends Mapper<Text, Text, Text, Text> {
 		public void map(Text key, Text value, Context context) throws IOException, InterruptedException {			
 			context.write(value,key);
 		}
@@ -99,7 +89,7 @@ public class AdListMapReduce {
 	 * The key' is the input vertex
 	 * The value' is the adjacency list of the input vertex
 	 */
-	private static class getAdjacencyListReducer extends Reducer<Text, Text, Text, ArrayListWritable<ArrayListWritable<Text>>> {
+	public static class getAdjacencyListReducer extends Reducer<Text, Text, Text, ArrayListWritable<ArrayListWritable<Text>>> {
 		
 	    public void reduce(Text key, Iterable<Text> values,Context context) throws IOException, InterruptedException {	        
 	    	String nodeLabel="adList";
@@ -138,7 +128,7 @@ public class AdListMapReduce {
 	 * @return deleteDuplicationJob.waitForCompletion(true)
 	 * @throws Exception
 	 */
-	private boolean deleteDuplication(Configuration conf, String input,
+	public static boolean deleteDuplication(Configuration conf, String input,
 			String output) throws Exception {
 		conf.set("mapreduce.input.keyvaluelinerecordreader.key.value.separator", "\n");
 		
@@ -169,7 +159,7 @@ public class AdListMapReduce {
 	 * @param conf input output
 	 * @throws Exception
 	 */
-	private boolean findNeighbor(Configuration conf, String input,
+	public static boolean findNeighbor(Configuration conf, String input,
 			String output) throws Exception {
 		conf.set("mapreduce.input.keyvaluelinerecordreader.key.value.separator", "\n");
 		
@@ -200,7 +190,7 @@ public class AdListMapReduce {
 	 * @param conf input output
 	 * @throws IOException ClassNotFoundException InterruptedException
 	 */
-	private boolean getAdjacencyList(Configuration conf, String input,
+	public static boolean getAdjacencyList(Configuration conf, String input,
 			String output) throws IOException, ClassNotFoundException, InterruptedException {
 		conf.set("mapreduce.input.keyvaluelinerecordreader.key.value.separator", ",");
 		Job getAdjacencyListJob = new Job(conf, "get adjancency list");
@@ -225,7 +215,7 @@ public class AdListMapReduce {
 		
 	}
 
-	public void adList(Configuration conf, String inputFile, String outputFile) throws Exception {
+	public static void adList(Configuration conf, String inputFile, String outputFile) throws Exception {
 		
 		boolean success=false;
 		//delete the duplicate records in the original file and get the neighbor relation
@@ -245,7 +235,7 @@ public class AdListMapReduce {
 		}
 	}
 	
-	public void deleteDup(Configuration conf, String inputFile, String outputFile) throws Exception {		
+	public static void deleteDup(Configuration conf, String inputFile, String outputFile) throws Exception {		
 		deleteDuplication(conf,inputFile,outputFile);
 	}
 
