@@ -16,8 +16,7 @@ public class Config {
 	public static final String YAMMER_PATH="https://www.yammer.com/api/v1/export?since="+since+"&model="+model+"&access_token="+access_token;
 	//BASE_PATH for the output files and input files
 	public static final String BASE_PATH="pscan/";
-	//thresHold for PSCAN
-	public static final double thresHold=0.7;
+
 	//Upload to Azure
 	public static final String storageConnectionString =
 		        "DefaultEndpointsProtocol=http;"

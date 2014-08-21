@@ -13,12 +13,12 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
-import org.apache.hadoop.util.GenericOptionsParser;
 
 import com.ibm.pscan.type.ArrayListWritable;
 
 
 public class PSCANMapReduce {
+	
 	
 	
 	/**
@@ -109,7 +109,43 @@ public class PSCANMapReduce {
 	}	
 	
 
+	
+
+	
+	
 /*------------------------Configuration of mapperClass and reducerClass-------------------------------------------------------------------------------------------------*/	
+	
+	/**
+	 * Find the vertex's neighbors
+	 * 
+	 * @param conf input output
+	 */
+	public static boolean findNeighbor(Configuration conf, String input,
+			String output) throws Exception {
+		
+		conf.set("mapreduce.input.keyvaluelinerecordreader.key.value.separator", "\n");
+		
+		Job findNeighborJob = new Job(conf, "find neighbour of each verticle");
+		findNeighborJob.setJarByClass(PSCANMapReduce.class);
+		findNeighborJob.setMapperClass(deleteDuplicationMapper.class);	    	    
+		findNeighborJob.setReducerClass(findNeighborReducer.class);
+		findNeighborJob.setPartitionerClass(KeyFieldBasedPartitioner.class);
+
+		findNeighborJob.setMapOutputKeyClass(Text.class); 
+		findNeighborJob.setMapOutputValueClass(Text.class); 
+	    
+		findNeighborJob.setOutputKeyClass(Text.class);	    
+		findNeighborJob.setOutputValueClass(Text.class);
+		
+		findNeighborJob.setInputFormatClass(KeyValueTextInputFormat.class);
+		findNeighborJob.setOutputFormatClass(TextOutputFormat.class);
+	    
+	    FileInputFormat.addInputPath(findNeighborJob, new Path(input));
+	    FileOutputFormat.setOutputPath(findNeighborJob, new Path(output+"/"+"findNeighbor"));
+	    
+		return findNeighborJob.waitForCompletion(true);
+	}
+	
 	
 	/**
 	 * Set the MapperClass and ReducerClass for the deleteDuplicationJob
@@ -172,67 +208,4 @@ public class PSCANMapReduce {
 		
 	}
 	
-	/**
-	 * Find the vertex's neighbors
-	 * 
-	 * @param conf input output
-	 */
-	public static boolean findNeighbor(Configuration conf, String input,
-			String output) throws Exception {
-		
-		conf.set("mapreduce.input.keyvaluelinerecordreader.key.value.separator", "\n");
-		
-		Job findNeighborJob = new Job(conf, "find neighbour of each verticle");
-		findNeighborJob.setJarByClass(PSCANMapReduce.class);
-		findNeighborJob.setMapperClass(deleteDuplicationMapper.class);	    	    
-		findNeighborJob.setReducerClass(findNeighborReducer.class);
-		findNeighborJob.setPartitionerClass(KeyFieldBasedPartitioner.class);
-
-		findNeighborJob.setMapOutputKeyClass(Text.class); 
-		findNeighborJob.setMapOutputValueClass(Text.class); 
-	    
-		findNeighborJob.setOutputKeyClass(Text.class);	    
-		findNeighborJob.setOutputValueClass(Text.class);
-		
-		findNeighborJob.setInputFormatClass(KeyValueTextInputFormat.class);
-		findNeighborJob.setOutputFormatClass(TextOutputFormat.class);
-	    
-	    FileInputFormat.addInputPath(findNeighborJob, new Path(input));
-	    FileOutputFormat.setOutputPath(findNeighborJob, new Path(output+"/"+"findNeighbor"));
-	    
-		return findNeighborJob.waitForCompletion(true);
-	}
-	
-	public static void main(String[] args) throws Exception {
-		
-		Configuration conf = new Configuration();
-		
-		//Get the input and output path of PSCAN
-		String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
-	    if (otherArgs.length != 2) {
-	      System.err.println("Usage: PSCAN <in> <out>");
-	      System.exit(2);
-	    }	
-	    
-//	    String[] otherArgs=new String[2];
-//	    otherArgs[0]=IOPath.ADLIST_INPUT;
-//	    otherArgs[1]=IOPath.ADLIST_OUTPUT;
-	    
-//		boolean success=false;
-
-		
-		//delete the duplicate records in the original file and get the neighbor relation
-		if(findNeighbor(conf,otherArgs[0], otherArgs[1])){
-			//get the adjustList of each node
-			if(deleteDuplication(conf,otherArgs[1])){
-				getAdjacencyList(conf,otherArgs[1]);
-			}
-		}
-	
-//		if(success){
-//			FileSystem fs = FileSystem.get(conf);
-//			fs.delete(new Path(IOPath.ADLIST_NEIGHBOR_OUTPUT),true);
-//			fs.delete(new Path(IOPath.ADLIST_RELATION_OUTPUT),true);
-//		}
-	}
 }

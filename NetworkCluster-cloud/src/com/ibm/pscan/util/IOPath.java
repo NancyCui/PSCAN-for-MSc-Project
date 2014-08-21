@@ -56,36 +56,4 @@ public class IOPath {
 	public static final String FINDINPUTPARA_OUTPUT=OUTPUT_BASE_PATH+"output0-Similarity-CSV.csv";
 	
 	
-	/**
-	 * Input and Output Files for PSCAN.java
-	 */
-	//For ADListMapReduce.java
-	public static final String ADLIST_INPUT=BASE_PATH+"input";
-	public static final String ADLIST_INPUT2=GETPAR_OUTPUT_ID;
-	public static final String ADLIST_NEIGHBOR_OUTPUT=OUTPUT_BASE_PATH+"output";
-	public static final String ADLIST_RELATION_OUTPUT=OUTPUT_BASE_PATH+"output2-relationship";
-	public static final String ADLIST_OUTPUT=OUTPUT_BASE_PATH+"output1-adjacencyList";
-		
-	//For PCSSMapReduce.java
-	public static final String PCSS_INPUT=OUTPUT_BASE_PATH+"output1-adjacencyList";
-	public static final String PCSS_OUTPUT=OUTPUT_BASE_PATH+"output2-PCSS";
-	
-	//For PCSStoLPCCMapReduce.java
-	public static final String PTOL_INPUT=OUTPUT_BASE_PATH+"output2-PCSS";
-	public static final String PTOL_OUTPUT=OUTPUT_BASE_PATH+"output3-PtoL";
-	
-	//For LPCCMapReduce.java
-	public static final String LPCC_INPUT=OUTPUT_BASE_PATH+"output3-PtoL";
-	public static final String LPCC_OUTPUT=OUTPUT_BASE_PATH+"output4-LPCC";
-	public static final String LPCC_OUTPUT2=OUTPUT_BASE_PATH+"output5-LPCC";
-	public static final String LPCC_ADLIST_INPUT=OUTPUT_BASE_PATH+"output1-adjacencyList";
-	
-	//For ClusterMapReduce.java
-	public static final String CLUSTER_INPUT=OUTPUT_BASE_PATH+"output4-LPCC";
-	public static final String CLUSTER_OUTPUT=OUTPUT_BASE_PATH+"output5-Clusters";	
-	
-	//For HubesFineder.java
-	public static final String HUBFINDER_INPUT=OUTPUT_BASE_PATH+"output4-LPCC/part-r-00000";
-	public static final String HUBFINDER_OUTPUT=OUTPUT_BASE_PATH+"output5-Clusters/part-r-00000";
-	
 }
