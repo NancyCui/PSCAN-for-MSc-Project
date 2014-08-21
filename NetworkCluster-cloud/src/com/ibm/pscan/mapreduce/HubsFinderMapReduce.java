@@ -155,7 +155,7 @@ public class HubsFinderMapReduce {
 
 	public static void findHubs(Configuration conf, String path) throws IOException {
 
-		String fileVertex=path+"/"+"lpccOutput"+"/part-r-00000";
+		String fileVertex=path+"/"+"lpccAfterOutput"+"/part-r-00000";
 		String fileCluster=path+"/"+"clusters"+"/part-r-00000";
 		
 	    FileSystem fsVertex = FileSystem.get(URI.create(fileVertex), conf);

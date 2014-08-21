@@ -16,6 +16,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
 
+import com.ibm.pscan.control.PSCAN;
 import com.ibm.pscan.type.ArrayListWritable;
 import com.ibm.pscan.type.Edge;
 
@@ -29,7 +30,8 @@ import com.ibm.pscan.type.Edge;
 
 public class PCSSMapReduce {
 
-	private static double thresHold; 
+	public static double thresHold=PSCAN.thresHold; 
+
 	
 	/**
 	 * Key is the input vertex, value is the adjacency list of the input vertex
@@ -108,11 +110,10 @@ public class PCSSMapReduce {
         }
 	}
 	
-	public static boolean doPCSS(Configuration conf, String path, Double thresHoldPCSS) throws IOException, ClassNotFoundException, InterruptedException {
-		
-		thresHold=thresHoldPCSS;
+	public static boolean doPCSS(Configuration conf, String path) throws IOException, ClassNotFoundException, InterruptedException {
 		
 		Job doPCSSJob = new Job(conf, "calculate the structural similarity");
+
 		doPCSSJob.setJarByClass(PCSSMapReduce.class);
 		doPCSSJob.setMapperClass(doPCSSMapper.class);	    
 		doPCSSJob.setReducerClass(doPCSSReducer .class);
@@ -133,4 +134,5 @@ public class PCSSMapReduce {
 	    return doPCSSJob.waitForCompletion(true);		
 		
 	}
+
 }

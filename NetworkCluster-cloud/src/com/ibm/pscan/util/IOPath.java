@@ -11,7 +11,7 @@ public class IOPath {
 	private static String DATE=dateFormat.format(cal.getTime());
 
 	private static final String BASE_PATH=Config.BASE_PATH;
-	private static final String OUTPUT_BASE_PATH = BASE_PATH+"output_"+DATE+"/";
+	public static final String OUTPUT_BASE_PATH = BASE_PATH+"output_"+DATE+"/";
 	
 	/**
 	 * For YammerIO.java & Unzip.java & YammerToAzure.java

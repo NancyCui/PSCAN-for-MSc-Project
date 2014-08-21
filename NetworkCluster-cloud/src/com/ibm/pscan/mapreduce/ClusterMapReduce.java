@@ -64,7 +64,7 @@ public class ClusterMapReduce {
 		convertJob.setOutputKeyClass(Text.class);
 		convertJob.setOutputValueClass(ArrayListWritable.class);
 	    
-	    FileInputFormat.addInputPath(convertJob, new Path(path+"/"+"lpccOutput"));
+	    FileInputFormat.addInputPath(convertJob, new Path(path+"/"+"lpccAfterOutput"));
 	    FileOutputFormat.setOutputPath(convertJob, new Path(path+"/"+"clusters"));
 	    
 	    return convertJob.waitForCompletion(true);		

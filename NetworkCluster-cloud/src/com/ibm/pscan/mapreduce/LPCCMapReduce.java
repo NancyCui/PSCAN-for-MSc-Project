@@ -1,7 +1,9 @@
 package com.ibm.pscan.mapreduce;
+import com.ibm.pscan.io.SequenceFileIO;
 import com.ibm.pscan.type.ArrayListWritable;
 
 import java.io.IOException;
+import java.net.URI;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -18,14 +20,14 @@ import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
 
 
 /**
- * Cluster the nodes, if it is a non-member node, tag it.
+ * Cluster the nodes
+ * 
  * @author Ningxin
  */
 
 public class LPCCMapReduce {
 	
 	private static int loopCount=0;
-	private static boolean iterateLPCC=true; 
 		
 	/**
 	 * Input: <Text, ArrayListWritable>
@@ -98,7 +100,6 @@ public class LPCCMapReduce {
 			oldLabel=strInfo.get(1).get(0).toString();
 			if(oldLabel.compareTo(newLabel)>0&&(!newLabel.equals(""))){
 				strInfo.get(1).get(0).set(new Text(newLabel));
-				iterateLPCC=true;
 			}
 			else{
 				strInfo.get(0).get(0).set(new Text("inactivated"));
@@ -108,91 +109,8 @@ public class LPCCMapReduce {
 
 	}	
 	
-	/**
-	 * Find Non-member nodes
-	 * Read from the input files and get the key value pair for the reduce process 
-	 */
-	public static class findNonMemberMapper extends Mapper<Text, ArrayListWritable<ArrayListWritable<Text>>, Text, ArrayListWritable<ArrayListWritable<Text>>> {
-       
-		public void map(Text key, ArrayListWritable<ArrayListWritable<Text>> value, Context context) throws IOException, InterruptedException {
-        	Text newKey=new Text(key.toString().replaceAll("	", ""));
-        	context.write(newKey, value);           
-        }
-    }
-	
-	public static class findNonMemberCombiner extends Reducer<Text, ArrayListWritable<ArrayListWritable<Text>>, Text, ArrayListWritable<ArrayListWritable<Text>>>{
-		
-		public void reduce(Text key, Iterable<ArrayListWritable<ArrayListWritable<Text>>> values, Context context) throws IOException, InterruptedException { 
-			 for(ArrayListWritable<ArrayListWritable<Text>> val: values){
-				 context.write(key, val);
-			 }
-		 }
-	}
-	
-	/**
-	 * Reformate the key value pair to get the final result
-	 * Input:
-	 * Key is the vertexID
-	 * Value is the structural information
-	 * The label in the structural is: inactivated/adList
-	 * Output:
-	 * Key' is the vertexID
-	 * Value' is the re-formated structural information
-	 * [[inactivated/adList], [clusterID], [adjacency list]]
-	 * The adjacency list is the one before cutting stage
-	 */
-	public static class findNonMemberReducer extends Reducer<Text, ArrayListWritable<ArrayListWritable<Text>>, Text, ArrayListWritable<ArrayListWritable<Text>>> {
-        
-		public void reduce(Text key, Iterable<ArrayListWritable<ArrayListWritable<Text>>> values, Context context) throws IOException, InterruptedException {                      
-        	ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> newValues=new ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>>();
-        	ArrayListWritable<ArrayListWritable<Text>> value=new ArrayListWritable<ArrayListWritable<Text>>();
-        	
-        	for(ArrayListWritable<ArrayListWritable<Text>> val: values){
-        		value=new ArrayListWritable<ArrayListWritable<Text>>(val);
-        		newValues.add(value);       		
-        	}
-        	
-        	/*
-        	 * If there is only 1 value, means the nodes is neither a outlier or hub
-        	 */
-        	if(newValues.size()==1){        		
-        		context.write(key, newValues.get(0));
-        	}
-        	else if(newValues.size()==2){
-        		ArrayListWritable<ArrayListWritable<Text>> newStrInfo=new ArrayListWritable<ArrayListWritable<Text>>();
-        		ArrayListWritable<Text> newStatus=new ArrayListWritable<Text>();
-        		ArrayListWritable<Text> newLabel=new ArrayListWritable<Text>();
-        		ArrayListWritable<Text> newAdList=new ArrayListWritable<Text>();
-        		
-        		for(ArrayListWritable<ArrayListWritable<Text>> val: newValues){
-        			if(val.get(0).get(0).toString().equals("inactivated")){
-        				newStatus.add(val.get(0).get(0));
-        				newLabel.add(val.get(1).get(0));
-        			}
-        			else{
-        				newAdList=new ArrayListWritable<Text>(val.get(2));
-        			}
-        			
-        			
-        		}
-        		newStrInfo.add(newStatus);
-    			newStrInfo.add(newLabel);
-    			newStrInfo.add(newAdList);
-        		context.write(key,newStrInfo);
-        	}
-        	else{
-        		System.out.println("Error. The number of value is 0");
-        	}
-        }
-	}
-	
-	
-	
-/*------------------------Configuration of mapperClass and reducerClass-------------------------------------------------------------------------------------------------*/
 	public static boolean doLPCC(Configuration conf, String input,
 			String output) throws IOException, ClassNotFoundException, InterruptedException {
-		
-		iterateLPCC=false;
 		
 		Job doLPCCJob = new Job(conf, "cluster");
 		doLPCCJob.setJarByClass(LPCCMapReduce.class);
@@ -217,96 +135,74 @@ public class LPCCMapReduce {
 	}
 	
 
-	public static boolean findNonMember(Configuration conf,
-			String input1, String input2, String output) throws IOException, ClassNotFoundException, InterruptedException {
-		
-		Job findNonMemberJob = new Job(conf, "cluster-findNonMember");
-		findNonMemberJob.setJarByClass(LPCCMapReduce.class);
-		findNonMemberJob.setMapperClass(findNonMemberMapper.class);	 
-		findNonMemberJob.setCombinerClass(findNonMemberCombiner.class);
-		findNonMemberJob.setReducerClass(findNonMemberReducer .class);
-		findNonMemberJob.setPartitionerClass(KeyFieldBasedPartitioner.class);
-	    
-		findNonMemberJob.setInputFormatClass(SequenceFileInputFormat.class);
-		findNonMemberJob.setOutputFormatClass(SequenceFileOutputFormat.class);
-		
-		findNonMemberJob.setMapOutputKeyClass(Text.class); 
-		findNonMemberJob.setMapOutputValueClass(ArrayListWritable.class); 
-	    
-		findNonMemberJob.setOutputKeyClass(Text.class);
-		findNonMemberJob.setOutputValueClass(ArrayListWritable.class);
-	    
-	    FileInputFormat.addInputPath(findNonMemberJob, new Path(input1));
-	    FileInputFormat.addInputPath(findNonMemberJob, new Path(input2));
-	    FileOutputFormat.setOutputPath(findNonMemberJob, new Path(output));	    
-		
-	    return findNonMemberJob.waitForCompletion(true);
-	}
-	
-/*------------------------Main Method-------------------------------------------------------------------------------------------------*/		
 	public static void LPCC(Configuration conf, String path) throws Exception {
 		
-		boolean successLPCC=true;
-		boolean successNonMember;
+		boolean loop=true;
 		FileSystem fs = FileSystem.get(conf);
 		
 		String inputFile=path+"/"+"lpccInput";
 		String outputFile=path+"/"+"lpccOutput";
 		String outputFile2=path+"/"+"lpccOutput2";
-		String inputFile2=path+"/"+"adjacencyList";
 		
-		/*
-		 * iterate the Map and the Reduce process until all status is in-activated
-		 */
-		while(successLPCC){
-			while(iterateLPCC){
-				if(loopCount==0){
-					successLPCC=doLPCC(conf,inputFile, outputFile);
-					loopCount++;
-				}
-				else if((loopCount%2)==0&&loopCount!=0){
-					fs.delete(new Path(outputFile), true);
-					successLPCC=doLPCC(conf,outputFile2, outputFile);
-					loopCount++;
+		while(loop){
+			if(loopCount==0){
+				doLPCC(conf,inputFile, outputFile);
+				loopCount++;
+			}
+			else{										
+				if((loopCount%2)==0&&loopCount!=0){
+					loop=checkStatus(outputFile,fs,conf);
+					if(loop==true){
+						fs.delete(new Path(outputFile), true);
+						doLPCC(conf,outputFile2, outputFile);
+						loopCount++;
+					}
 				}
 				else{
 					if(fs.exists(new Path(outputFile2))){
-						fs.delete(new Path(outputFile2),true);
+						loop=checkStatus(outputFile2,fs,conf);
+						if(loop==true){
+							fs.delete(new Path(outputFile2),true);
+						}							
 					}
-					successLPCC=doLPCC(conf,outputFile, outputFile2);
-					loopCount++;
-				}
-				System.out.println("loopcount is: "+loopCount);
-			}
-			
-			/*
-			 * format the name of the output file
-			 */
-			if(loopCount%2==0&&loopCount!=0){
-				fs.delete(new Path(outputFile),true);
-				fs.rename(new Path(outputFile2), new Path(outputFile));
-			}
-			else{
-				if(fs.exists(new Path(outputFile2))){
-					fs.delete(new Path(outputFile2),true);
+				doLPCC(conf,outputFile, outputFile2);
+				loopCount++;
 				}
 			}
-			
-			/*
-			 * Find hubs and outliers in network
-			 */
-			
-			successNonMember=findNonMember(conf,outputFile, inputFile2, outputFile2);
-			
-			if(successNonMember){
-				fs.delete(new Path(outputFile),true);
-				fs.rename(new Path(outputFile2), new Path(outputFile));				
+		}
+		
+		/*
+		 * format the name of the output file
+		 */
+		if(loopCount%2==0&&loopCount!=0){
+			fs.delete(new Path(outputFile),true);
+			fs.rename(new Path(outputFile2), new Path(outputFile));
+		}
+		else{
+			if(fs.exists(new Path(outputFile2))){
+				fs.delete(new Path(outputFile2),true);
 			}
-			
-			break;
+		}	
 		
-		}		
-		
+	}
+
+
+	private static boolean checkStatus(String file, FileSystem fs, Configuration conf) throws IOException {
+		String fileVertex=file+"/part-r-00000";
+
+
+	    FileSystem fsVertex = FileSystem.get(URI.create(fileVertex), conf);
+	    Path pathVertex = new Path(fileVertex);
+	   	    
+	    //read the sequence file
+	    ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> vertexs=SequenceFileIO.readSequenceFileTAA(fsVertex, pathVertex, conf);   
+	    
+	    for(int i=0;i<vertexs.size();i++){
+	    	if(vertexs.get(i).get(1).get(0).toString().equals("activated")){
+	    		return true;
+	    	}
+	    }
+		return false;
 	}
 
 }
