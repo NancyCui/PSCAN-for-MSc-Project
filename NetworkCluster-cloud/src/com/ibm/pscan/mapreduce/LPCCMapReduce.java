@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URI;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
@@ -188,20 +189,25 @@ public class LPCCMapReduce {
 
 
 	private static boolean checkStatus(String file, FileSystem fs, Configuration conf) throws IOException {
-		String fileVertex=file+"/part-r-00000";
 
 
-	    FileSystem fsVertex = FileSystem.get(URI.create(fileVertex), conf);
-	    Path pathVertex = new Path(fileVertex);
-	   	    
-	    //read the sequence file
-	    ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> vertexs=SequenceFileIO.readSequenceFileTAA(fsVertex, pathVertex, conf);   
+	    FileSystem fsVertex = FileSystem.get(URI.create(file), conf);
+	    FileStatus fileList[] = fsVertex.listStatus(new Path(file));
 	    
-	    for(int i=0;i<vertexs.size();i++){
-	    	if(vertexs.get(i).get(1).get(0).toString().equals("activated")){
-	    		return true;
-	    	}
-	    }
+	    int size = fileList.length;
+		  for(int i = 0; i < size; i++){
+			  if( fileList[i].getPath().toString().contains("part")){
+				  ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> vertexs=SequenceFileIO.readSequenceFileTAA(fsVertex, fileList[i].getPath() , conf);   
+				    for(int j=0;j<vertexs.size();j++){
+				    	if(vertexs.get(j).get(1).get(0).toString().equals("activated")){
+				    		return true;
+				    	}
+				    }
+			  }
+		  
+		  }
+		 fs.close();	
+
 		return false;
 	}
 
