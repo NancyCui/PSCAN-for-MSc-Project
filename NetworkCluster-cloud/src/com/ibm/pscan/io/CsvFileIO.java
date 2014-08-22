@@ -1,14 +1,17 @@
 package com.ibm.pscan.io;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 
 import com.csvreader.CsvReader;
 
@@ -61,50 +64,51 @@ public class CsvFileIO {
 	
 	/**
 	 * Write the output to the CSV file
+	 * @param conf 
 	 * 
 	 * @param filename content
 	 */
-	public static void writeFile(String filename, List<Double> contents){
+	public static void writeFile(String path, List<Double> contents, Configuration conf){
 		try{
-			File file=new File(filename);
-			if(!file.exists()){
-				file.createNewFile();
-			}
+			Path pt=new Path(path);
+	        FileSystem fs = FileSystem.get(conf);
+	        BufferedWriter br=new BufferedWriter(new OutputStreamWriter(fs.create(pt,true)));
 			String output = "";
 			for(int i=0;i<contents.size();i++){
 				output+=contents.get(i).toString();
 				output+=(i==contents.size()-1?"":",");
-				output+=lineSep;
 			}					
-			BufferedWriter writer = new BufferedWriter(new FileWriter(file,true));
-			writer.write(output);
-			writer.flush();
-			writer.close();			
+			br.write(output);
+            br.close();			
 			
 		}catch(Exception e){
-			e.printStackTrace();
+			System.out.println("File not found");
 		}
 	}
 	
-	public static void writeToCsv(String fileName,
-			Map<String, ArrayList<String>> clusterMember) throws IOException {
-		File file=new File(fileName);
-		if(!file.exists()){
-			file.createNewFile();
-		}
-		Iterator<String> keys = clusterMember.keySet().iterator();
-		String output="";
-		while(keys.hasNext()){
-			String key=keys.next().toString();
-			output+="Group:"+key.replace("[", "").replace("]", "")+",";
-			output+=clusterMember.get(key).toString().replace("[", "").replace("]", "");
-			output+=",";
-			output+=lineSep;
-		}	
-		BufferedWriter writer = new BufferedWriter(new FileWriter(file,false));
-		writer.write(output);
-		writer.flush();
-		writer.close();
+	/**
+	 * Write to CSV file on cloud
+	 */
+	public static void writeToCsv(String path,
+			Map<String, ArrayList<String>> clusterMember, Configuration conf) throws IOException {
+		try{
+            Path pt=new Path(path);
+            FileSystem fs = FileSystem.get(conf);
+            BufferedWriter br=new BufferedWriter(new OutputStreamWriter(fs.create(pt,true)));
+            Iterator<String> keys = clusterMember.keySet().iterator();
+            String output="";
+    		while(keys.hasNext()){
+    			String key=keys.next().toString();
+    			output+="Group:"+key.replace("[", "").replace("]", "")+",";
+    			output+=clusterMember.get(key).toString().replace("[", "").replace("]", "");
+    			output+=",";
+    			output+=lineSep;
+    		}	
+            br.write(output);
+            br.close();
+		}catch(Exception e){
+            System.out.println("File not found");
+		}		
 	}
 
 	

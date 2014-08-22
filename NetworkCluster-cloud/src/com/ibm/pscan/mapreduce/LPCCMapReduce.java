@@ -152,7 +152,7 @@ public class LPCCMapReduce {
 			}
 			else{										
 				if((loopCount%2)==0&&loopCount!=0){
-					loop=checkStatus(outputFile,fs,conf);
+					loop=checkStatus(outputFile,conf);
 					if(loop==true){
 						fs.delete(new Path(outputFile), true);
 						doLPCC(conf,outputFile2, outputFile);
@@ -161,7 +161,7 @@ public class LPCCMapReduce {
 				}
 				else{
 					if(fs.exists(new Path(outputFile2))){
-						loop=checkStatus(outputFile2,fs,conf);
+						loop=checkStatus(outputFile2,conf);
 						if(loop==true){
 							fs.delete(new Path(outputFile2),true);
 						}							
@@ -185,12 +185,14 @@ public class LPCCMapReduce {
 			}
 		}	
 		
+		fs.close();
+		
 	}
 
 	/**
 	 * Read the outputFile to check if all status are "inactivated"
 	 */
-	private static boolean checkStatus(String file, FileSystem fs, Configuration conf) throws IOException {
+	private static boolean checkStatus(String file, Configuration conf) throws IOException {
 
 	    FileSystem fsVertex = FileSystem.get(URI.create(file), conf);
 	    FileStatus fileList[] = fsVertex.listStatus(new Path(file));	    
@@ -205,8 +207,8 @@ public class LPCCMapReduce {
 				}
 			}
 		  
-		}
-		fs.close();	
+		}	
+		fsVertex.close();
 		return false;
 	}
 

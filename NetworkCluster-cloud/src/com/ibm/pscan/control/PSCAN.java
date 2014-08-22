@@ -21,8 +21,8 @@ import com.ibm.pscan.util.IOPath;
 
 public class PSCAN {
 	
-//	public static double thresHold=0.0;
-	public static double thresHold=0.7;
+	public static double thresHold=0.0;
+//	public static double thresHold=0.7;
 	
 	public static void main(String[] args) throws Exception {
 		
@@ -52,29 +52,31 @@ public class PSCAN {
 	    	fs.delete(new Path("wasb:///app-logs/admin/logs"), true);
 	    }
 		
-		calculatePSCAN(conf, otherArgs);
-		//getInputPara(conf,otherArgs);
+//		calculatePSCAN(conf, otherArgs);
+		getInputPara(conf,otherArgs);
+		
+		fs.close();
 		
 	}
 
-//	private static void getInputPara(Configuration conf, String[] otherArgs) throws ClassNotFoundException, IOException, InterruptedException, Exception {
-//		if(PSCANMapReduce.findNeighbor(conf,otherArgs[0], otherArgs[1])){
-//			//delete duplicate records
-//			if(PSCANMapReduce.deleteDuplication(conf,otherArgs[1])){
-//				//get the adjustList of each node
-//				if(PSCANMapReduce.getAdjacencyList(conf,otherArgs[1])){
-//					//calculate the structural similarity
-//					if(PCSSMapReduce.doPCSS(conf,otherArgs[1])){
-//						if(InputParaMapReduce.findInputPara(conf,otherArgs[1])){
-//							FindInputPara.findInputPara(otherArgs[1]+"/"+"inputPara/part-r-00000");
-//						}
-//					}
-//				
-//				}
-//			}
-//		}
-//		
-//	}
+	private static void getInputPara(Configuration conf, String[] otherArgs) throws ClassNotFoundException, IOException, InterruptedException, Exception {
+		if(PSCANMapReduce.findNeighbor(conf,otherArgs[0], otherArgs[1])){
+			//delete duplicate records
+			if(PSCANMapReduce.deleteDuplication(conf,otherArgs[1])){
+				//get the adjustList of each node
+				if(PSCANMapReduce.getAdjacencyList(conf,otherArgs[1])){
+					//calculate the structural similarity
+					if(PCSSMapReduce.doPCSS(conf,otherArgs[1])){
+						if(InputParaMapReduce.findInputPara(conf,otherArgs[1])){
+							FindInputPara.findInputPara(otherArgs[1], conf);
+						}
+					}
+				
+				}
+			}
+		}
+		
+	}
 
 	/**
 	 * Cluster the nodes

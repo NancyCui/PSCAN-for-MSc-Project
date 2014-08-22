@@ -2,7 +2,6 @@ package com.ibm.pscan.mapreduce;
 
 
 import com.ibm.pscan.type.ArrayListWritable;
-import com.ibm.pscan.util.Config;
 
 import java.io.IOException;
 import java.net.URI;
@@ -17,7 +16,6 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 
-import com.ibm.pscan.io.AzureIO;
 import com.ibm.pscan.io.CsvFileIO;
 import com.ibm.pscan.io.SequenceFileIO;
 
@@ -198,16 +196,8 @@ public class HubsFinderMapReduce {
 	    
 	    Map<String,ArrayList<String>> clusterMember=getClusterMembers(output);
 	    System.out.println(clusterMember);
-	    CsvFileIO.writeToCsv("result.csv",clusterMember);
-	   
-//		String inputFilePath="result.csv";
-//		String containerName=Config.CONTAINER_NAME;
-//		String storageFileName=path+"/"+"result.csv";		
-//
-//		AzureIO.uploadToAzure(inputFilePath,containerName,storageFileName);
+	    CsvFileIO.writeToCsv(path+"/result.csv",clusterMember, conf);
 		
-
-
 	  }
 
 

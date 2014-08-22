@@ -1,6 +1,5 @@
 package com.ibm.pscan.dataHelper;
 import com.ibm.pscan.type.ArrayListWritable;
-import com.ibm.pscan.util.IOPath;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -8,11 +7,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 
-import com.ibm.pscan.gui.LineChartController;
 import com.ibm.pscan.io.CsvFileIO;
 import com.ibm.pscan.io.SequenceFileIO;
 
@@ -29,17 +28,28 @@ public class FindInputPara {
 	 * Read the file and get the similarity for each node
 	 * 
 	 * @param inputFile
+	 * @param path 
 	 * @throws Exception 
 	 */
-	private static void readVertexSimi(String inputFile) throws Exception{
+	private static void readVertexSimi(String inputFile, String path) throws Exception{
 		
-	    Configuration conf = new Configuration();
-	    FileSystem fsSimi = FileSystem.get(URI.create(inputFile), conf);
-	    Path pathSimi = new Path(inputFile);
-	    
-	    ArrayListWritable<ArrayListWritable<Text>> simi=SequenceFileIO.readSequenceFileTD(fsSimi, pathSimi, conf);
+		Configuration conf = new Configuration();
+		ArrayListWritable<ArrayListWritable<Text>> simi= new ArrayListWritable<ArrayListWritable<Text>>();
+	    FileSystem fsCluster = FileSystem.get(URI.create(inputFile), conf);
+	    FileStatus fileCluster[] = fsCluster.listStatus(new Path(inputFile));
+	    int sizeCluster = fileCluster.length;
+		for(int i = 0; i < sizeCluster; i++){
+			if( fileCluster[i].getPath().toString().contains("part")){
+				ArrayListWritable<ArrayListWritable<Text>> c=SequenceFileIO.readSequenceFileTD(fsCluster, fileCluster[i].getPath() , conf); 
+				for(int j=0;j<c.size();j++){
+					simi.add(c.get(j));
+				}
+			}
+		}
+		
+		fsCluster.close();
 
-	    getSimi(simi);
+	    getSimi(simi, path, conf);
 	    
 	}
 	
@@ -47,10 +57,9 @@ public class FindInputPara {
 	 * Get the similarity and rank them in ASC order
 	 * Store the first 10% similarity into an ArrayList<Double>
 	 * 
-	 * @param simi
-	 * @throws Exception 
+	 * @param simi path conf
 	 */
-	private static void getSimi(ArrayListWritable<ArrayListWritable<Text>> simi) throws Exception {
+	private static void getSimi(ArrayListWritable<ArrayListWritable<Text>> simi, String path, Configuration conf) throws Exception {
 		ArrayList<Double> similarity= new ArrayList<Double>();
 		for(ArrayListWritable<Text> s: simi){
 			similarity.add(Double.parseDouble(s.get(1).toString()));
@@ -73,10 +82,8 @@ public class FindInputPara {
 		else{
 			finalSimi=simiSublist;
 		}
-	
-		CsvFileIO.writeFile(IOPath.FINDINPUTPARA_OUTPUT, finalSimi);
 		
-		LineChartController.drawLineChart(finalSimi);
+		CsvFileIO.writeFile(path+"/"+"finalSimi.csv", finalSimi, conf);
 		
 	}
 
@@ -135,8 +142,10 @@ public class FindInputPara {
 	}
 
 	
-	public static void findInputPara(String inputFile) throws Exception {
-		 readVertexSimi(inputFile);
+	public static void findInputPara(String inputFile, Configuration conf) throws Exception {
+		String input =inputFile+"/"+"inputPara"; 
+		String path=inputFile;
+		readVertexSimi(input, path);
 		
 	}
 	
