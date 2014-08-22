@@ -7,13 +7,17 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.GenericOptionsParser;
 
+import com.ibm.pscan.dataHelper.FindInputPara;
 import com.ibm.pscan.mapreduce.ClusterMapReduce;
 import com.ibm.pscan.mapreduce.HubsFinderMapReduce;
+import com.ibm.pscan.mapreduce.InputParaMapReduce;
 import com.ibm.pscan.mapreduce.LPCCAfterMapReduce;
 import com.ibm.pscan.mapreduce.LPCCMapReduce;
 import com.ibm.pscan.mapreduce.PCSSMapReduce;
 import com.ibm.pscan.mapreduce.PCSStoLPCCMapReduce;
 import com.ibm.pscan.mapreduce.PSCANMapReduce;
+import com.ibm.pscan.util.Config;
+import com.ibm.pscan.util.IOPath;
 
 public class PSCAN {
 	
@@ -26,6 +30,10 @@ public class PSCAN {
 		Configuration conf = new Configuration();
 		
 		FileSystem fs = FileSystem.get(conf);
+		
+//		String[] otherArgs =new String[2];
+//		otherArgs[0]=Config.BASE_PATH+"/input";
+//		otherArgs[1]=IOPath.OUTPUT_BASE_PATH;
 		
 		String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
 		
@@ -45,8 +53,28 @@ public class PSCAN {
 	    }
 		
 		calculatePSCAN(conf, otherArgs);
+		//getInputPara(conf,otherArgs);
 		
 	}
+
+//	private static void getInputPara(Configuration conf, String[] otherArgs) throws ClassNotFoundException, IOException, InterruptedException, Exception {
+//		if(PSCANMapReduce.findNeighbor(conf,otherArgs[0], otherArgs[1])){
+//			//delete duplicate records
+//			if(PSCANMapReduce.deleteDuplication(conf,otherArgs[1])){
+//				//get the adjustList of each node
+//				if(PSCANMapReduce.getAdjacencyList(conf,otherArgs[1])){
+//					//calculate the structural similarity
+//					if(PCSSMapReduce.doPCSS(conf,otherArgs[1])){
+//						if(InputParaMapReduce.findInputPara(conf,otherArgs[1])){
+//							FindInputPara.findInputPara(otherArgs[1]+"/"+"inputPara/part-r-00000");
+//						}
+//					}
+//				
+//				}
+//			}
+//		}
+//		
+//	}
 
 	/**
 	 * Cluster the nodes

@@ -6,7 +6,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import com.csvreader.CsvReader;
 
@@ -82,6 +84,27 @@ public class CsvFileIO {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+	}
+	
+	public static void writeToCsv(String fileName,
+			Map<String, ArrayList<String>> clusterMember) throws IOException {
+		File file=new File(fileName);
+		if(!file.exists()){
+			file.createNewFile();
+		}
+		Iterator<String> keys = clusterMember.keySet().iterator();
+		String output="";
+		while(keys.hasNext()){
+			String key=keys.next().toString();
+			output+="Group:"+key.replace("[", "").replace("]", "")+",";
+			output+=clusterMember.get(key).toString().replace("[", "").replace("]", "");
+			output+=",";
+			output+=lineSep;
+		}	
+		BufferedWriter writer = new BufferedWriter(new FileWriter(file,false));
+		writer.write(output);
+		writer.flush();
+		writer.close();
 	}
 
 	

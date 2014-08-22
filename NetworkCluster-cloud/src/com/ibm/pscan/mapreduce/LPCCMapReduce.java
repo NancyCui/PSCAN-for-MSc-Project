@@ -187,27 +187,26 @@ public class LPCCMapReduce {
 		
 	}
 
-
+	/**
+	 * Read the outputFile to check if all status are "inactivated"
+	 */
 	private static boolean checkStatus(String file, FileSystem fs, Configuration conf) throws IOException {
 
-
 	    FileSystem fsVertex = FileSystem.get(URI.create(file), conf);
-	    FileStatus fileList[] = fsVertex.listStatus(new Path(file));
-	    
+	    FileStatus fileList[] = fsVertex.listStatus(new Path(file));	    
 	    int size = fileList.length;
-		  for(int i = 0; i < size; i++){
-			  if( fileList[i].getPath().toString().contains("part")){
-				  ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> vertexs=SequenceFileIO.readSequenceFileTAA(fsVertex, fileList[i].getPath() , conf);   
-				    for(int j=0;j<vertexs.size();j++){
-				    	if(vertexs.get(j).get(1).get(0).toString().equals("activated")){
-				    		return true;
-				    	}
-				    }
-			  }
+		for(int i = 0; i < size; i++){
+			if( fileList[i].getPath().toString().contains("part")){
+				ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> vertexs=SequenceFileIO.readSequenceFileTAA(fsVertex, fileList[i].getPath() , conf);   
+				for(int j=0;j<vertexs.size();j++){
+					if(vertexs.get(j).get(1).get(0).toString().equals("activated")){
+						return true;
+					}
+				}
+			}
 		  
-		  }
-		 fs.close();	
-
+		}
+		fs.close();	
 		return false;
 	}
 

@@ -2,6 +2,7 @@ package com.ibm.pscan.mapreduce;
 
 
 import com.ibm.pscan.type.ArrayListWritable;
+import com.ibm.pscan.util.Config;
 
 import java.io.IOException;
 import java.net.URI;
@@ -11,10 +12,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 
+import com.ibm.pscan.io.AzureIO;
+import com.ibm.pscan.io.CsvFileIO;
 import com.ibm.pscan.io.SequenceFileIO;
 
 /**
@@ -155,29 +159,58 @@ public class HubsFinderMapReduce {
 
 	public static void findHubs(Configuration conf, String path) throws IOException {
 
-		String fileVertex=path+"/"+"lpccAfterOutput"+"/part-r-00000";
-		String fileCluster=path+"/"+"clusters"+"/part-r-00000";
+		String fileVertexs=path+"/"+"lpccAfterOutput";
+		String fileCluster=path+"/"+"clusters";
 		
-	    FileSystem fsVertex = FileSystem.get(URI.create(fileVertex), conf);
-	    Path pathVertex = new Path(fileVertex);
+		ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> vertexs = new ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>>();
+	    FileSystem fsVertex = FileSystem.get(URI.create(fileVertexs), conf);
+	    FileStatus fileList[] = fsVertex.listStatus(new Path(fileVertexs));
+	    int size = fileList.length;
+		for(int i = 0; i < size; i++){
+			if( fileList[i].getPath().toString().contains("part")){
+				ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> v=SequenceFileIO.readSequenceFileTAA(fsVertex, fileList[i].getPath() , conf); 
+				for(int j=0;j<v.size();j++){
+					vertexs.add(v.get(j));
+				}
+			}
+		}
+		
+		fsVertex.close();
+		
+		ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> clusters= new ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>>();
 	    FileSystem fsCluster = FileSystem.get(URI.create(fileCluster), conf);
-	    Path pathCluster = new Path(fileCluster);
-	   
+	    FileStatus fileListCluster[] = fsCluster.listStatus(new Path(fileCluster));
+	    int sizeCluster = fileListCluster.length;
+		for(int i = 0; i < sizeCluster; i++){
+			if( fileListCluster[i].getPath().toString().contains("part")){
+				ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> c=SequenceFileIO.readSequenceFileTA(fsCluster, fileListCluster[i].getPath() , conf); 
+				for(int j=0;j<c.size();j++){
+					clusters.add(c.get(j));
+				}
+			}
+		}
+		
+		fsCluster.close();
 	    
-	    //read the sequence file
-	    ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> vertexs=SequenceFileIO.readSequenceFileTAA(fsVertex, pathVertex, conf);   
-	    ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> clusters=SequenceFileIO.readSequenceFileTA(fsCluster, pathCluster, conf);
+	    
 	    //find Hubs and outliners  
 	    ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> output=findHubs(vertexs, clusters);
-	    for(int i=0;i<output.size();i++){
-	    	System.out.println(output.get(i).toString());
-	    }
 	    
 	    Map<String,ArrayList<String>> clusterMember=getClusterMembers(output);
 	    System.out.println(clusterMember);
+	    CsvFileIO.writeToCsv("result.csv",clusterMember);
+	   
+//		String inputFilePath="result.csv";
+//		String containerName=Config.CONTAINER_NAME;
+//		String storageFileName=path+"/"+"result.csv";		
+//
+//		AzureIO.uploadToAzure(inputFilePath,containerName,storageFileName);
+		
 
 
 	  }
+
+
 
 
 

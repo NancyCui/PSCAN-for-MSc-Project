@@ -32,7 +32,7 @@ public class TxtFileIO {
 				output+=(i==contents.size()-1?"":"\n");
 			}
 			output+=lineSep;	
-			BufferedWriter writer = new BufferedWriter(new FileWriter(file,true));
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file,false));
 			writer.write(output);
 			writer.flush();
 			writer.close();						
