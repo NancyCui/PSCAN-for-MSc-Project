@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.ibm.pscan.gui.LineChartController;
 import com.ibm.pscan.io.AzureIO;
+import com.ibm.pscan.io.CsvFileIO;
 import com.ibm.pscan.util.Config;
 
 /**
@@ -20,7 +21,13 @@ public class DrawInputPara {
 	
 	public static void main(String[] args) throws Exception {
 		AzureIO.downloadFromAzure(path,containerName, filePath);
-//		List<Double> finalSimi=new ArrayList<Double>();
-//		LineChartController.drawLineChart(finalSimi);
+		ArrayList<ArrayList<String>> contents=CsvFileIO.readCSVFile(filePath+"/"+"result.csv");
+		System.out.println(contents.get(0));
+		List<Double> finalSimi=new ArrayList<Double>();
+		for(int i=0;i<contents.get(0).size();i++){
+			double simi=Double.parseDouble(contents.get(0).get(i));
+			finalSimi.add(simi);
+		}
+		LineChartController.drawLineChart(finalSimi);
 	}
 }

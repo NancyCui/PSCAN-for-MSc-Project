@@ -1,6 +1,9 @@
 package com.ibm.pscan.io;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
@@ -60,6 +63,37 @@ public class CsvFileIO {
 			content.add(body);
 		}
 		return content;
+	}
+	
+	/**
+	 * Read the file and return to ArrayList<ArrayList<String>>
+	 */
+	public static ArrayList<ArrayList<String>> readCSVFile(String filename) throws IOException{
+		
+		ArrayList<ArrayList<String>> contents=new ArrayList<ArrayList<String>>();						
+
+		File file=new File(filename);		
+			
+		if(file.exists()){
+			try{
+				BufferedReader reader = new BufferedReader(new FileReader(file));
+				String thisLine="";
+				int i=0;
+				while ((thisLine = reader.readLine()) != null) {
+					String[] line=thisLine.split(",",0);
+					contents.add(i,new ArrayList<String>());
+					for(int j=0;j<line.length;j++){
+						contents.get(i).add(line[j]);
+					}
+					i++;
+				}
+				reader.close();
+			}			
+			catch(Exception e){
+				e.printStackTrace();
+			}		
+		}		
+		return contents;		
 	}
 	
 	/**
