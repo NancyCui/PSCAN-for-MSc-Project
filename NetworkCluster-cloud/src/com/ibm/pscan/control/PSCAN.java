@@ -40,11 +40,6 @@ public class PSCAN {
 	    if(fs.exists(new Path(otherArgs[1]))){
 	    	fs.delete(new Path(otherArgs[1]), true);
 	    }
-	    
-	    //delete the log file
-	    if(fs.exists(new Path("wasb:///app-logs/admin/logs"))){
-	    	fs.delete(new Path("wasb:///app-logs/admin/logs"), true);
-	    }
 
 	    //write the input parameters into to a csv file on cloud
 	    writeArguments(otherArgs, conf);

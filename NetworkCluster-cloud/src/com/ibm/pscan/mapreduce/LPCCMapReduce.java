@@ -164,10 +164,15 @@ public class LPCCMapReduce {
 						loop=checkStatus(outputFile2,conf);
 						if(loop==true){
 							fs.delete(new Path(outputFile2),true);
+							doLPCC(conf,outputFile, outputFile2);
+							loopCount++;
 						}							
 					}
-				doLPCC(conf,outputFile, outputFile2);
-				loopCount++;
+					else{
+						doLPCC(conf,outputFile, outputFile2);
+						loopCount++;
+					}
+									
 				}
 			}
 		}
