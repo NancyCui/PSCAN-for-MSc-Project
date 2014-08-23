@@ -17,6 +17,7 @@ import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
 
 import com.ibm.pscan.control.PSCAN;
+import com.ibm.pscan.io.CsvFileIO;
 import com.ibm.pscan.type.ArrayListWritable;
 import com.ibm.pscan.type.Edge;
 
@@ -30,13 +31,14 @@ import com.ibm.pscan.type.Edge;
 
 public class PCSSMapReduce {
 
-	public static double thresHold=PSCAN.thresHold; 
+	public static String t= CsvFileIO.readCsvFromCloud(PSCAN.ARGS_PATH).get(0).get(2);
+	public static double thresHold=Double.parseDouble(t); 
 
 	
 	/**
 	 * Key is the input vertex, value is the adjacency list of the input vertex
 	 * Key' is the edge connecting the input vertex and its neighbor
-	 * Value' is the adjacency list of the input vertex
+	 * Value' is the adjacency list of the input ver;tex
 	 * @author Ningxin
 	 *
 	 */

@@ -35,25 +35,5 @@ public class IOPath {
 	public static final String GETPAR_OUTPUT_ID=GETPAR_OUTPUT_BASE + "/input_users";
 	
 	
-	/**
-	 * Input and Output Files for finding input parameter
-	 */	
-	//For ADListMapReduce.java
-	public static final String ADLIST_INPUT_0=BASE_PATH+"input";
-	public static final String ADLIST_INPUT_1=GETPAR_OUTPUT_ID;
-	public static final String ADLIST_OUTPUT_0=OUTPUT_BASE_PATH+"output0-adjacencyList";
-	
-	//For PCSSMapReduce.java
-	public static final String PCSS_INPUT_0=OUTPUT_BASE_PATH+"output0-adjacencyList";
-	public static final String PCSS_OUTPUT_0=OUTPUT_BASE_PATH+"output0-PCSS";
-	
-	//For InputParaMapReduce.java
-	public static final String INPUTPARA_INPUT=OUTPUT_BASE_PATH+"output0-PCSS";
-	public static final String INPUTPARA_OUTPUT=OUTPUT_BASE_PATH+"output0-InputPara";
-
-	//For FindInputPara.java
-	public static final String FINDINPUTPARA_INPUT=OUTPUT_BASE_PATH+"output0-InputPara/part-r-00000";
-	public static final String FINDINPUTPARA_OUTPUT=OUTPUT_BASE_PATH+"output0-Similarity-CSV.csv";
-	
 	
 }

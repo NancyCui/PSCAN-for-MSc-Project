@@ -8,6 +8,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.GenericOptionsParser;
 
 import com.ibm.pscan.dataHelper.FindInputPara;
+import com.ibm.pscan.io.CsvFileIO;
 import com.ibm.pscan.mapreduce.ClusterMapReduce;
 import com.ibm.pscan.mapreduce.HubsFinderMapReduce;
 import com.ibm.pscan.mapreduce.InputParaMapReduce;
@@ -16,13 +17,10 @@ import com.ibm.pscan.mapreduce.LPCCMapReduce;
 import com.ibm.pscan.mapreduce.PCSSMapReduce;
 import com.ibm.pscan.mapreduce.PCSStoLPCCMapReduce;
 import com.ibm.pscan.mapreduce.PSCANMapReduce;
-import com.ibm.pscan.util.Config;
-import com.ibm.pscan.util.IOPath;
 
 public class PSCAN {
 	
-	public static double thresHold=0.0;
-//	public static double thresHold=0.7;
+	public static final String ARGS_PATH="wasb:///example/data/pscanOutput/args.csv";
 	
 	public static void main(String[] args) throws Exception {
 		
@@ -31,14 +29,10 @@ public class PSCAN {
 		
 		FileSystem fs = FileSystem.get(conf);
 		
-//		String[] otherArgs =new String[2];
-//		otherArgs[0]=Config.BASE_PATH+"/input";
-//		otherArgs[1]=IOPath.OUTPUT_BASE_PATH;
-		
 		String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
 		
-	    if (otherArgs.length != 2) {
-	      System.err.println("Usage: PSCAN <in> <out>");
+	    if (otherArgs.length != 3) {
+	      System.err.println("Usage: PSCAN <in> <out> <threshold>");
 	      System.exit(2);
 	    }
 	    
@@ -51,14 +45,34 @@ public class PSCAN {
 	    if(fs.exists(new Path("wasb:///app-logs/admin/logs"))){
 	    	fs.delete(new Path("wasb:///app-logs/admin/logs"), true);
 	    }
-		
-//		calculatePSCAN(conf, otherArgs);
-		getInputPara(conf,otherArgs);
+
+	    //write the input parameters into to a csv file on cloud
+	    writeArguments(otherArgs, conf);
+	    
+	    double thresHold=Double.parseDouble(otherArgs[2]);
+	    if(thresHold>0){
+	    	calculatePSCAN(conf, otherArgs);
+	    }
+	    else{
+	    	getInputPara(conf,otherArgs);
+	    }
 		
 		fs.close();
 		
 	}
 
+	/**
+	 * Write the threhold into a file on cloud
+	 */
+	private static void writeArguments(String[] otherArgs, Configuration conf) {
+		 CsvFileIO.writeArrayToCSV(ARGS_PATH, otherArgs, conf);
+		 System.out.println("Write input parameters successful.");
+	
+	}
+
+	/**
+	 * The Map Reduce progress for calculate the threshold of the networks
+	 */
 	private static void getInputPara(Configuration conf, String[] otherArgs) throws ClassNotFoundException, IOException, InterruptedException, Exception {
 		if(PSCANMapReduce.findNeighbor(conf,otherArgs[0], otherArgs[1])){
 			//delete duplicate records
@@ -79,9 +93,7 @@ public class PSCAN {
 	}
 
 	/**
-	 * Cluster the nodes
-	 * 
-	 * @param conf otherArgs
+	 * Cluster the nodes into groups and find hubs and outliners
 	 */
 	private static void calculatePSCAN(Configuration conf, String[] otherArgs) throws ClassNotFoundException, IOException, InterruptedException, Exception {
 		//delete the duplicate records in the original file and get the neighbor relation

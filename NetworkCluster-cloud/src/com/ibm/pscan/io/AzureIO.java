@@ -59,7 +59,7 @@ public class AzureIO {
 
 	        // Download an file.
 	        CloudBlockBlob blob = container.getBlockBlobReference(inputFilePath);
-	        blob.download(new FileOutputStream(fileName+"/"+"result.csv"));	 
+	        blob.download(new FileOutputStream(fileName));	 
 	         
 	        System.out.println("Finish download the file from Azure.");
 

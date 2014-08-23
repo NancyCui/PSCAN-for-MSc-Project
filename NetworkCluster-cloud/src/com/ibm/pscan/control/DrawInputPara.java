@@ -15,13 +15,14 @@ import com.ibm.pscan.util.Config;
  */
 public class DrawInputPara {
 	
-	private static String path="example/data/pscanOutput/finalSimi.csv";
-	private static String filePath="/Users/Nancy/Desktop";
+	private static String cloudFilePath="example/data/pscanOutput/finalSimi.csv";
+	private static String outputFilePath="/Users/Nancy/Desktop/finalSimi.csv";
 	private static String containerName=Config.CONTAINER_NAME;
 	
 	public static void main(String[] args) throws Exception {
-		AzureIO.downloadFromAzure(path,containerName, filePath);
-		ArrayList<ArrayList<String>> contents=CsvFileIO.readCSVFile(filePath+"/"+"result.csv");
+		AzureIO.downloadFromAzure(cloudFilePath,containerName, outputFilePath);
+		//ArrayList<ArrayList<String>> contents=CsvFileIO.readCsvFromCloud(cloudFilePath);
+		ArrayList<ArrayList<String>> contents=CsvFileIO.readCSVFile(outputFilePath);
 		System.out.println(contents.get(0));
 		List<Double> finalSimi=new ArrayList<Double>();
 		for(int i=0;i<contents.get(0).size();i++){

@@ -83,7 +83,7 @@ public class FindInputPara {
 			finalSimi=simiSublist;
 		}
 		
-		CsvFileIO.writeFile(path+"/"+"finalSimi.csv", finalSimi, conf);
+		CsvFileIO.writeListToCsv(path+"/"+"finalSimi.csv", finalSimi, conf);
 		
 	}
 

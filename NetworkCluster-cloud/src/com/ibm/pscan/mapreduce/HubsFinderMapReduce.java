@@ -196,7 +196,7 @@ public class HubsFinderMapReduce {
 	    
 	    Map<String,ArrayList<String>> clusterMember=getClusterMembers(output);
 	    System.out.println(clusterMember);
-	    CsvFileIO.writeToCsv(path+"/result.csv",clusterMember, conf);
+	    CsvFileIO.writeMapToCsv(path+"/result.csv",clusterMember, conf);
 		
 	  }
 

@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -97,12 +98,12 @@ public class CsvFileIO {
 	}
 	
 	/**
-	 * Write the output to the CSV file
+	 * Write the output to the CSV file on could
 	 * @param conf 
 	 * 
 	 * @param filename content
 	 */
-	public static void writeFile(String path, List<Double> contents, Configuration conf){
+	public static void writeListToCsv(String path, List<Double> contents, Configuration conf){
 		try{
 			Path pt=new Path(path);
 	        FileSystem fs = FileSystem.get(conf);
@@ -123,7 +124,7 @@ public class CsvFileIO {
 	/**
 	 * Write to CSV file on cloud
 	 */
-	public static void writeToCsv(String path,
+	public static void writeMapToCsv(String path,
 			Map<String, ArrayList<String>> clusterMember, Configuration conf) throws IOException {
 		try{
             Path pt=new Path(path);
@@ -143,6 +144,50 @@ public class CsvFileIO {
 		}catch(Exception e){
             System.out.println("File not found");
 		}		
+	}
+	
+	/**
+	 * Write an array to CSV file on cloud
+	 */
+	public static void writeArrayToCSV(String path, String[] contents, Configuration conf){
+		try{
+			Path pt=new Path(path);
+	        FileSystem fs = FileSystem.get(conf);
+	        BufferedWriter br=new BufferedWriter(new OutputStreamWriter(fs.create(pt,true)));
+			String output = "";
+			for(int i=0;i<contents.length;i++){
+				output+=contents[i].toString();
+				output+=(i==contents.length-1?"":",");
+			}					
+			br.write(output);
+            br.close();			
+			
+		}catch(Exception e){
+			System.out.println("File not found");
+		}
+	}
+
+	public static ArrayList<ArrayList<String>> readCsvFromCloud(String argsPath) {		
+		ArrayList<ArrayList<String>> contents=new ArrayList<ArrayList<String>>();	
+		
+        try{
+            Path pt=new Path(argsPath);
+            FileSystem fs = FileSystem.get(new Configuration());
+            BufferedReader br=new BufferedReader(new InputStreamReader(fs.open(pt)));
+            String thisLine="";
+			int i=0;
+			while ((thisLine = br.readLine()) != null) {
+				String[] line=thisLine.split(",",0);
+				contents.add(i,new ArrayList<String>());
+				for(int j=0;j<line.length;j++){
+					contents.get(i).add(line[j]);
+				}
+				i++;
+			}
+        }catch(Exception e){
+        	System.out.println("File not found");
+        }
+		return contents;
 	}
 
 	
