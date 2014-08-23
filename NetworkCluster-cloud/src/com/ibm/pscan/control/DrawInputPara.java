@@ -21,7 +21,6 @@ public class DrawInputPara {
 	
 	public static void main(String[] args) throws Exception {
 		AzureIO.downloadFromAzure(cloudFilePath,containerName, outputFilePath);
-		//ArrayList<ArrayList<String>> contents=CsvFileIO.readCsvFromCloud(cloudFilePath);
 		ArrayList<ArrayList<String>> contents=CsvFileIO.readCSVFile(outputFilePath);
 		System.out.println(contents.get(0));
 		List<Double> finalSimi=new ArrayList<Double>();
