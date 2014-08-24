@@ -10,7 +10,7 @@ public class Config {
 	
 	//tokens for download data from yammer
 	private static String since="2014-07-15T00:00:00";
-	private static String model="Message&Users";
+	private static String model="Message"+"&model=User";
 	private static String access_token="6JeMC7oECscFdMAkSYD6w";
 	
 	public static final String YAMMER_PATH="https://www.yammer.com/api/v1/export?since="+since+"&model="+model+"&access_token="+access_token;
