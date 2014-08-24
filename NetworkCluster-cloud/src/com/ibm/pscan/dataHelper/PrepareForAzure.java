@@ -1,23 +1,21 @@
 package com.ibm.pscan.dataHelper;
 
-import com.ibm.pscan.io.AzureIO;
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
+
 import com.ibm.pscan.io.YammerIO;
+import com.ibm.pscan.util.Config;
 
 public class PrepareForAzure {
 	//unzip file
 	private String fileName;
 	private String filePath;
-	//upload to azure
-	private String inputFilePath;
-	private String containerName;
-	private String storageFileName;	
-	
-	public PrepareForAzure(String fileName, String filePath, String inputFilePath,String containerName,String storageFileName){
+
+	public PrepareForAzure(String fileName, String filePath){
 		this.fileName=fileName;
 		this.filePath=filePath;
-		this.inputFilePath=inputFilePath;
-		this.containerName=containerName;
-		this.storageFileName=storageFileName;
 	}
 	
 	public void prepare(){
@@ -25,7 +23,17 @@ public class PrepareForAzure {
 		YammerIO.downloadMessage(); 
 		//unzip the downloaded file
 		UnZip.unZipFile(fileName, filePath);
-		//upload file to azure, parameters: inputFilePath, containterName, fileName
-		AzureIO.uploadToAzure(inputFilePath,containerName,storageFileName);
+		
+		File source = new File(filePath+"/Messages.csv");
+		File dest = new File(Config.STORAGE_FILE);
+		File source2 = new File(filePath+"/Users.csv");
+		File dest2 = new File(Config.STORAGE_FILE);
+		try {
+		    FileUtils.copyFileToDirectory(source, dest);
+		    FileUtils.copyFileToDirectory(source2, dest2);
+		    System.out.println("Finishied");
+		} catch (IOException e) {
+		    e.printStackTrace();
+		};
 	}
 }

@@ -16,7 +16,7 @@ import com.ibm.pscan.util.Config;
 public class DrawInputPara {
 	
 	private static String cloudFilePath="example/data/pscanOutput/finalSimi.csv";
-	private static String outputFilePath="/Users/Nancy/Desktop/finalSimi.csv";
+	private static String outputFilePath=Config.BASE_PATH+"finalSimi.csv";
 	private static String containerName=Config.CONTAINER_NAME;
 	
 	public static void main(String[] args) throws Exception {

@@ -4,41 +4,28 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.apache.hadoop.conf.Configuration;
+
 import com.ibm.pscan.io.CsvFileIO;
 import com.ibm.pscan.io.TxtFileIO;
-import com.ibm.pscan.util.IOPath;
 
 /**
  * Get the participation information in the inputfile
  * Write to the specific outputfile
- * Call method "participant()"
  * 
  * @author Ningxin
  *
  */
 public class GetParticipant {
 	
-	private int column = 6; //get the participations data
-	
-	private static GetParticipant getParticipantInstance=null;
-	
-	private GetParticipant() {
-		
-	}	
-	
-	public static GetParticipant getInstance(){
-		if(getParticipantInstance==null){
-			getParticipantInstance=new GetParticipant();
-		}
-		return getParticipantInstance;
-	}
-		
+	private static int column = 6; //get the participations data
+			
 	/**
 	 * Get the specific data (key, value) pair- the participants information
 	 * 
 	 * @param message
 	 */
-	private ArrayList<String> getParticipants(ArrayList<ArrayList<String>> message, int column) {
+	private  static ArrayList<String> getParticipants(ArrayList<ArrayList<String>> message, int column) {
 		ArrayList<String> participants=new ArrayList<String>();
 		String textContent;
 		for(int i=0; i<message.size();i++){
@@ -58,7 +45,7 @@ public class GetParticipant {
 	 * Get the replied_to_id, threadID and the senderID
 	 * If the replied_to_id is null, 
 	 */
-	private ArrayList<String> getReply(ArrayList<ArrayList<String>> message) {
+	private static ArrayList<String> getReply(ArrayList<ArrayList<String>> message) {
 		ArrayList<String> reply=new ArrayList<String>();	
 		for(int i=0; i<message.size();i++){
 			if(message.get(i).get(column).equals("")){				
@@ -89,19 +76,14 @@ public class GetParticipant {
 	/**
 	 * Read the inputfile and write the participant result into txt file
 	 */
-	private void participant() throws IOException{		
-		ArrayList<ArrayList<String>> message=CsvFileIO.readFile(IOPath.GETPAR_INPUT);
+	public static void participant(String input_Path, String output_Path, Configuration conf) throws IOException{		
+		ArrayList<ArrayList<String>> message=CsvFileIO.readFile(input_Path);
 		ArrayList<String> participants=getParticipants(message, column);
 		ArrayList<String> replyMessage=getReply(message);
 		Collections.sort(replyMessage);
-		TxtFileIO.insertFile(IOPath.GETPAR_OUTPUT, participants);
-		TxtFileIO.insertFile(IOPath.GETPAR_OUTPUT_REPLY, replyMessage);
+		TxtFileIO.insertFile(output_Path+"/"+"userRelation.txt", participants);
+		TxtFileIO.insertFile(output_Path+"/"+"findNeighbor/reply.txt", replyMessage);
 		System.out.println("Finish Writing");		
 	}
 
-
-	public void relationship() throws IOException {
-		participant();		
-	}
-	
 }

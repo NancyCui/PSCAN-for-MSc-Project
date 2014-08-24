@@ -4,9 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.ibm.pscan.io.CsvFileIO;
+import com.ibm.pscan.util.Config;
 import com.ibm.pscan.util.IOPath;
 
-public class GetMessage {
+public class GetDetails {
 	
 	private static int columnID = 9; //get each message's sender ID
 	private static int columnContent=13; //get the message content of the sender
@@ -28,8 +29,20 @@ public class GetMessage {
 		return messages;
 	}
 	
+	private static ArrayList<ArrayList<String>> getUsers(ArrayList<ArrayList<String>> user) {
+		ArrayList<ArrayList<String>> users=new ArrayList<ArrayList<String>>();
+		for(int i=0; i<user.size();i++){
+			ArrayList<String> u=new ArrayList<String>();
+			for(int j=0;j<=5;j++){
+				u.add(user.get(i).get(j));
+			}
+			users.add(u);
+		}
+		return users;
+	}
+	
 	/**
-	 * Read the inputfile and write the participant result into txt file
+	 * Read the inputfile and return the participant result
 	 * @return 
 	 */
 	public static ArrayList<ArrayList<String>> messages() throws IOException{		
@@ -39,4 +52,14 @@ public class GetMessage {
 	}
 	
 	
+	/**
+	 * Read the inputfile and return the user details
+	 * @return 
+	 */
+	public static ArrayList<ArrayList<String>> userDetails() throws IOException{		
+		ArrayList<ArrayList<String>> user=CsvFileIO.readFile(Config.STORAGE_FILE_NAME_USER);		
+		ArrayList<ArrayList<String>> users=getUsers(user);
+		return users;	
+	}
+
 }

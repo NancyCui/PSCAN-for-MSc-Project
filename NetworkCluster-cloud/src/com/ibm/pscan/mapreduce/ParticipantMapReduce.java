@@ -16,10 +16,12 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.mapreduce.lib.partition.KeyFieldBasedPartitioner;
 
 import com.ibm.pscan.io.TxtFileIO;
-import com.ibm.pscan.util.IOPath;
+import com.ibm.pscan.util.Config;
 
 
 public class ParticipantMapReduce {
+	
+	//private static String output="wasb:///example/pscan";
 	
 	/**
 	 * Key: the <replied_to_id, threadID>.
@@ -56,7 +58,7 @@ public class ParticipantMapReduce {
 	    		
 	    	}
 	    	if(output.size()>0){
-	    		TxtFileIO.insertFile(IOPath.GETPAR_OUTPUT, output);  
+	    		TxtFileIO.writeArrayListToTxt(Config.FORMAT_INPUT_TWO+"/userRelation.txt", output);  
 	    	}
 	    	 
         }
@@ -82,7 +84,7 @@ public class ParticipantMapReduce {
 		findConnectionsJob.setInputFormatClass(KeyValueTextInputFormat.class);
 		findConnectionsJob.setOutputFormatClass(TextOutputFormat.class);
 	    
-	    FileInputFormat.addInputPath(findConnectionsJob, new Path(path+"/"+"participantInput"));
+	    FileInputFormat.addInputPath(findConnectionsJob, new Path(path+"/"+"deleteDuplication"));
 	    FileOutputFormat.setOutputPath(findConnectionsJob, new Path(path+"/"+"participantOutput"));
 	    
 		return findConnectionsJob.waitForCompletion(true);

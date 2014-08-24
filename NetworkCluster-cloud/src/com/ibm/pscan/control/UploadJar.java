@@ -19,6 +19,9 @@ public class UploadJar {
 //	private static String inputFilePath="/Users/Nancy/Desktop/userRelation.txt";
 //	private static String containerName=Config.CONTAINER_NAME;
 //	private static String storageFileName="example/pscan/userRelation.txt";	
+//	private static String inputFilePath="/Users/Nancy/Desktop/Messages.csv";
+//	private static String containerName=Config.CONTAINER_NAME;
+//	private static String storageFileName="example/pscan/message.csv";	
 	
 	public static void main(String[] args){
 		AzureIO.uploadToAzure(inputFilePath,containerName,storageFileName);
