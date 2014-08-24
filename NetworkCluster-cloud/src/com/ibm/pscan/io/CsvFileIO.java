@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -190,5 +191,26 @@ public class CsvFileIO {
 		return contents;
 	}
 
+	
+	public static void insertCSVFile(String filename, ArrayList<String> contents){
+		try{
+			File file=new File(filename);
+			if(!file.exists()){
+				file.createNewFile();
+			}
+			String output = "";
+			for(int i=0;i<contents.size();i++){
+				output+=contents.get(i);
+				output+=(i==contents.size()-1?"":",");
+			}
+			output+=lineSep;	
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file,true));
+			writer.write(output);
+			writer.flush();
+			writer.close();						
+		}catch(Exception e){
+			e.printStackTrace();
+		}			
+	}
 	
 }
