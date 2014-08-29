@@ -213,4 +213,38 @@ public class CsvFileIO {
 		}			
 	}
 	
+	/**
+	 * Write TF-IDF result to csv file 
+	 */
+	public static void writeResultToFile(ArrayList<String> keySet,
+			ArrayList<ArrayList<ArrayList<String>>> result, String filename) {		
+		int i=0;
+		for(ArrayList<ArrayList<String>> r: result){
+			ArrayList<String> content= new ArrayList<String>();
+			for(int j=0;j<keySet.size();j++){
+				if(i==0){
+					ArrayList<String> title= new ArrayList<String>();
+					for(String k:keySet){
+						title.add("User:"+k+" Word");
+						title.add("User:"+k+" TFIDF");
+					}
+					i++;
+					File f=new File(filename);
+					if(f.exists()){
+						f.delete();
+					}
+					CsvFileIO.insertCSVFile(filename,title);
+				}
+				
+				String word=r.get(j).get(1);
+				String value=r.get(j).get(2);
+				content.add(word);
+				content.add(value);					
+			}	
+			CsvFileIO.insertCSVFile(filename,content); 
+		}
+			
+		
+	}
+	
 }

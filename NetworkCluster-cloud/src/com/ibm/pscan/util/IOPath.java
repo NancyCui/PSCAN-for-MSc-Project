@@ -30,7 +30,8 @@ public class IOPath {
 		"she","than","them","these","they","this","those","to","wasnt","was","very","too",
 		"way","were","what","when","who","while","which","where","whos","whom","why","with",
 		"would","you","your","yours","wont","wouldnt","yourselves","yourself","done","we","u","up",
-		"will","really","well","like","cannot","it","its","ourselves","please","ll","*","-","just","us","ur"};
+		"will","really","well","like","cannot","it","its","ourselves","please","ll","*","-","just","us",
+		"ur", "all", "alread","also", "anymore","foo", "hey", "hi", "ok", "oh", "thank", "thanks","thing"};
 
 	
 }

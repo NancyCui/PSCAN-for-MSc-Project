@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 import com.ibm.pscan.util.IOPath;
 
@@ -31,7 +32,7 @@ public class prepareTFIDF {
 	 * For each hubs, write the related word into a hash map
 	 */
 	public static Map<String, ArrayList<ArrayList<String>>> writeIntoMap(ArrayList<ArrayList<String>> messages, ArrayList<String> hubs) {
-		
+		Pattern pattern = Pattern.compile("([#,$]*[0-9]*([th*]|[pm]*))");   
 		Map<String, ArrayList<ArrayList<String>>> memberMessage= new HashMap<String, ArrayList<ArrayList<String>>>();
 		String[] commons=IOPath.COMMON_WORDS;
 		ArrayList<String> commonWords = new ArrayList<String>(Arrays.asList(commons));
@@ -45,7 +46,7 @@ public class prepareTFIDF {
 					ArrayList<String> word=new ArrayList<String>();
 					while (tokenizer.hasMoreTokens()) {
 						String w=tokenizer.nextToken().toLowerCase().replace("\"", "").trim();
-						if(!commonWords.contains(w)&&(!w.equals(""))){
+						if(!commonWords.contains(w)&&(!w.equals(""))&&(!pattern.matcher(w).matches())){
 							word.add(w);
 						}						
 				    }

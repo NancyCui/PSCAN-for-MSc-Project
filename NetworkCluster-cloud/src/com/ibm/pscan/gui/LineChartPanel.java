@@ -21,7 +21,7 @@ import javax.swing.JPanel;
 public class LineChartPanel extends JPanel{
 	
 	//color for background, judge line, line chart, axises
-	int[][] color={{240,255,255},{192,192,192},{100,149,237},{25,25,112}};
+	int[][] color={{255,255,255},{192,192,192},{153,51,250},{25,25,112}};
 	
 	//set the label of the x-axis and y-axis
 	private static int shareX=0;
@@ -73,7 +73,7 @@ public class LineChartPanel extends JPanel{
 
 		Stroke strokePoint=new  BasicStroke(1,   BasicStroke.CAP_BUTT,   
                 BasicStroke.JOIN_BEVEL,   0,   
-                new   float[]{16,   4},   0);
+                new   float[]{1,   4},   0);
 		g2d.setStroke(strokePoint);
 		g2d.setColor(new Color(color[1][0],color[1][1],color[1][2]));
 		for(int i=0;i<shareX;i++){
@@ -96,7 +96,7 @@ public class LineChartPanel extends JPanel{
 	 */
 	private void drawPoint(Graphics2D g2d) {
 		for(int i=0;i<finalSimi.size();i++){
-			g2d.setColor(new Color(color[2][0],color[2][1],color[2][2]));
+			g2d.setColor(new Color(color[2][0]+i*6,color[2][1]-i*8,color[2][2]+i*6));
 			Stroke strokePoint=new BasicStroke(5.0f);
 			g2d.setStroke(strokePoint);
 			double pointX=originX+unitX*(i+1);			

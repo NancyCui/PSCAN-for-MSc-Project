@@ -43,7 +43,7 @@ public class GetParticipant {
 	/**
 	 * When the value in column "participant" is null
 	 * Get the replied_to_id, threadID and the senderID
-	 * If the replied_to_id is null, 
+	 * If the replied_to_id is null, set as thread_id
 	 */
 	private static ArrayList<String> getReply(ArrayList<ArrayList<String>> message) {
 		ArrayList<String> reply=new ArrayList<String>();	

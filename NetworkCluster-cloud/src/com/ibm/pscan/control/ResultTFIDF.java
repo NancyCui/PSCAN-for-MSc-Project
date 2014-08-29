@@ -1,6 +1,5 @@
 package com.ibm.pscan.control;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,17 +24,26 @@ public class ResultTFIDF {
 	private static String outputFilePath=Config.BASE_PATH+"result.csv";
 	private static String containerName=Config.CONTAINER_NAME;
 	private static String filename=Config.BASE_PATH+"tfidf.csv";
+	private static String filenameAll=Config.BASE_PATH+"tfidfall.csv";
 	
 	public static void main(String[] args) throws IOException {
 		
 		ArrayList<String> hubs=getHubs();
 		ArrayList<ArrayList<String>> messages=GetDetails.messages();
 		ArrayList<ArrayList<String>> users=GetDetails.userDetails();
+		ArrayList<String> allMember=new ArrayList<String>();
+		for(ArrayList<String> u : users){
+			String member=u.get(0);
+			allMember.add(member);
+		}
+				
 		getUserInfo(hubs,users);
-	
+			
 		//Put each member's message into a hashmap
 		Map<String,ArrayList<ArrayList<String>>> allDocuments= prepareTFIDF.writeIntoMap(messages, hubs);
-	 	//Get the key
+		Map<String,ArrayList<ArrayList<String>>> allMembersDocuments= prepareTFIDF.writeIntoMap(messages, allMember);
+
+		//Get the key
 		Iterator<String> keys = allDocuments.keySet().iterator();
 		ArrayList<String> keySet=new ArrayList<String>();
 	 	while(keys.hasNext()){
@@ -48,61 +56,55 @@ public class ResultTFIDF {
 		Collections.sort(allWords);
 		
 		ArrayList<ArrayList<String>> allFDoc=prepareTFIDF.formatedAllDocument(allDocuments);
-			 	
-	 	for(int i=0;i<allFDoc.size();i++){
-	 		System.out.println(allFDoc.get(i));
-	 	}
-	 	
-	 	ArrayList<Integer> maxF=new ArrayList<Integer>();
-	 	for(int i=0;i<allFDoc.size();i++){
-			ArrayList<String> document=allFDoc.get(i);
-			int maxFrequency=mostFrequencyWordInDoc(document);
-			maxF.add(maxFrequency);
-		}
+		ArrayList<ArrayList<String>> all=prepareTFIDF.formatedAllDocument(allMembersDocuments);
 
 	 	/*
 	 	 * For each word, calcute realted the TFIDF value of each document
 	 	 */
+	 	
 	 	ArrayList<ArrayList<ArrayList<String>>> result=new ArrayList<ArrayList<ArrayList<String>>>();
+	 	ArrayList<ArrayList<ArrayList<String>>> resultAll=new ArrayList<ArrayList<ArrayList<String>>>();
 		for(String w: allWords){
-			ArrayList<ArrayList<String>> wordTFIDF=calculateTFIDF(w,allFDoc,keySet,maxF);
+			ArrayList<ArrayList<String>> wordTFIDF=calculateTFIDF(w,allFDoc,keySet);
+			ArrayList<ArrayList<String>> wordTFIDFAll=calculateTFIDFAll(w,allFDoc,all,keySet);
 			result.add(wordTFIDF);
+			resultAll.add(wordTFIDFAll);
 		}		
-		writeResultToFile(keySet,result,filename);	
+		
+		CsvFileIO.writeResultToFile(keySet,result,filename);	
+		CsvFileIO.writeResultToFile(keySet,resultAll,filenameAll);	
 	}
 	
+
+
+	
 	/**
-	 * Write result to csv file 
+	 * Calculate the TF-IDF value for word compared to all users
+	 * @param w
+	 * @param allFDoc
+	 * @param all
+	 * @param keySet
+	 * @return
 	 */
-	private static void writeResultToFile(ArrayList<String> keySet,
-			ArrayList<ArrayList<ArrayList<String>>> result, String filename2) {		
-		int i=0;
-		for(ArrayList<ArrayList<String>> r: result){
-			ArrayList<String> content= new ArrayList<String>();
-			for(int j=0;j<keySet.size();j++){
-				if(i==0){
-					ArrayList<String> title= new ArrayList<String>();
-					for(String k:keySet){
-						title.add("User:"+k+" Word");
-						title.add("User:"+k+" TFIDF");
-					}
-					i++;
-					File f=new File(filename);
-					if(f.exists()){
-						f.delete();
-					}
-					CsvFileIO.insertCSVFile(filename,title);
-				}
-				
-				String word=r.get(j).get(1);
-				String value=r.get(j).get(2);
-				content.add(word);
-				content.add(value);					
-			}	
-			CsvFileIO.insertCSVFile(filename,content); 
+	private static ArrayList<ArrayList<String>> calculateTFIDFAll(String word,
+			ArrayList<ArrayList<String>> allFDoc,
+			ArrayList<ArrayList<String>> all, ArrayList<String> keySet) {
+		ArrayList<ArrayList<String>> tfidfValue=new ArrayList<ArrayList<String>>();
+		double tfidf;
+		for(int i=0;i<allFDoc.size();i++){
+			ArrayList<String> output=new ArrayList<String>();
+			ArrayList<String> document=allFDoc.get(i);
+			String key=keySet.get(i);			
+			double tf=calculateTF(word,document);
+			double idf=calculateIDF(word, all);
+			tfidf=tf*idf;
+			output.add(key);
+			output.add(word);
+			output.add(Double.toString(tfidf));
+			tfidfValue.add(output);
 		}
-			
 		
+		return tfidfValue;	
 	}
 
 	/**
@@ -110,18 +112,16 @@ public class ResultTFIDF {
 	 * Wrtie the value to csv file, named by each hubs name
 	 * 
 	 * @param word allDocuments keySet 
-	 * @param maxF 
 	 * @return 
 	 */
-	private static ArrayList<ArrayList<String>> calculateTFIDF(String word, ArrayList<ArrayList<String>> allFDoc, ArrayList<String> keySet, ArrayList<Integer> maxF) {
+	private static ArrayList<ArrayList<String>> calculateTFIDF(String word, ArrayList<ArrayList<String>> allFDoc, ArrayList<String> keySet) {
 		ArrayList<ArrayList<String>> tfidfValue=new ArrayList<ArrayList<String>>();
 		double tfidf;
 		for(int i=0;i<allFDoc.size();i++){
 			ArrayList<String> output=new ArrayList<String>();
 			ArrayList<String> document=allFDoc.get(i);
 			String key=keySet.get(i);			
-			int max=maxF.get(i);
-			double tf=calculateTF(word,document,max);
+			double tf=calculateTF(word,document);
 			double idf=calculateIDF(word, allFDoc);
 			tfidf=tf*idf;
 			output.add(key);
@@ -129,6 +129,7 @@ public class ResultTFIDF {
 			output.add(Double.toString(tfidf));
 			tfidfValue.add(output);
 		}
+		
 		return tfidfValue;		
 	}
 
@@ -140,51 +141,34 @@ public class ResultTFIDF {
 			ArrayList<ArrayList<String>> allFDoc) {
 		double idf=0.0;
 		double n=allFDoc.size();
-		int appear=0;
+		double appear=0.0;
 		for(ArrayList<String> d: allFDoc){
 			if(d.contains(word)){
 				appear++;
 			}
 		}
-		idf=Math.log((double)(n/appear));
+		if(appear!=0.0){
+			idf=Math.log((double)(n/appear));	
+		}
+		else{
+			idf=0.0;
+		}
 		return idf;
 	}
 
 	/**
 	 * Calculate the TF value for the word
-	 * @param max 
 	 * @return 
 	 */
 	private static double calculateTF(String word,
-			ArrayList<String> document, int max) {
+			ArrayList<String> document) {
 		double tf=0;
-		int frequency=0;
+		double frequency=0.0;
 		if(document.contains(word)){
 			frequency++;
 		}
-		tf=0.5*frequency/max+0.5;
+		tf=frequency/document.size();
 		return tf;
-	}
-
-	/**
-	 * maximum raw frequency of any term in the document
-	 */
-	private static int mostFrequencyWordInDoc(ArrayList<String> document) {	
-		int max=0;
-		int maxFrequency=0;
-		for(String w: document){
-			int frequency=0;
-			for(String w2: document){
-				if(w.equals(w2)){
-					frequency++;
-				}
-			}
-			if(maxFrequency<frequency){
-				maxFrequency=frequency;
-			}
-			max=Math.max(maxFrequency, frequency);
-		}
-		return max;
 	}
 
 	/**
@@ -200,7 +184,10 @@ public class ResultTFIDF {
 				 i--;
 			 }
 		 }
-		 System.out.println(users.toString());
+		 for(ArrayList<String> user: users){
+			 System.out.println(user.toString()); 
+		 }
+		 
 	 }	 
 
 	/**
