@@ -11,7 +11,7 @@ The email address of the author: cuiningxin@gmail.com
 
 ----------------------------------------------------------------------------------------------------------------------------
 
-<b>How to use this program: </b>
+<h2>How to use this program: </h2>
 
 Download the zip file, find "Config.java" and change the access_token to the specific token of your company. Using eclipse and Hadoop commond line (provide by azure hadoop) generate a runnable jar, name it as pscan.jar. Upload the pscan.jar to the relative azure account through "UploadJar.java". (the example about how to generate a map-reduce runnable jar could be found at the end of this file)
 
@@ -26,7 +26,7 @@ Once completed, open the "powershell.ise", open the "RunFormatInput.ps1" and "Ru
 Once finished the previous steps, you could start to find the special roles (the one who spreading ideas).
 
 ----------------------------------------------------------------------------------------------------------------------------
-<b> Analysis the Special Roles on Yammer: </b>
+<h2> Analysis the Special Roles on Yammer: </h2>
 
   1. Run "FormatInputOne.java" (this will upload the realted private conversational data to azure hadoop)(If the yammer network denies the conncetion, this will return some errors. In this case, please check the token in Config.java again. If it still do not work, please contact yammer.)
 
@@ -39,7 +39,7 @@ Once finished the previous steps, you could start to find the special roles (the
   5. Change the third argument in "RunPscan.ps1" to the seleted threshold value. Run the program. Once finished, run "ResultTFIDF.java". The cluster result could be found in "/pscan/result.csv" and the related TF-IDF results could be found in the same directory.
   
 ------------------------------------------------------------------------------------------------------------------------------
-<b>Generate .jar file:</b>
+<h2>Generate .jar file:</h2>
 
   1. Import the project in eclipse, right click and select "export" -> "runnable JAR File" 
   
@@ -57,6 +57,6 @@ Once finished the previous steps, you could start to find the special roles (the
   
 
 ------------------------------------------------------------------------------------------------------------------------------
-The realted paper: 
+<h2>The realted paper:</h2> 
 
 Ningxin Cui, 2014, Using graph analysis and data analytics to derive team relationships from Yammer social interaction data
