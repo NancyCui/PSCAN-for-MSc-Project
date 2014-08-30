@@ -52,3 +52,9 @@ Once finished the previous steps, you could start to find the special roles (the
   5. Find the pscan.jar file, copy it to the directory same as the one in "UploadJar.java". Run "UploadJar.java".
   
   6. The pscan.jar has already upload to your azure hdinsight.
+  
+
+------------------------------------------------------------------------------------------------------------------------------
+The realted paper: 
+
+Ningxin Cui, 2014, Using graph analysis and data analytics to derive team relationships from Yammer social interaction data
