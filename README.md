@@ -16,6 +16,7 @@ Download the zip file, find "Config.java" and change the access_token to the spe
 Find the powershell folder. Download and configure the azure powershell. 
 
 Link for download: http://www.microsoft.com/en-gb/download/details.aspx?id=40855
+
 Link for configuration: http://azure.microsoft.com/en-us/documentation/articles/install-configure-powershell/ 
 
 Once completed, open the "powershell.ise", open the "RunFormatInput.ps1" and "RunPscan.ps1", change the subscriptionName and clusterName to your own azure hdinsight account.
