@@ -13,7 +13,12 @@ The email address of the author: cuiningxin@gmail.com
 
 Download the zip file, find "Config.java" and change the access_token to the specific token of your company. Using eclipse and Hadoop commond line (provide by azure hadoop) generate a runnable jar, name it as pscan.jar. Upload the pscan.jar to the relative azure account through "UploadJar.java". (the example about how to generate a map-reduce runnable jar could be found at the end of this file)
 
-Find the powershell folder. Download and configure the azure powershell. Link for download: http://www.microsoft.com/en-gb/download/details.aspx?id=40855 Link for configuration: http://azure.microsoft.com/en-us/documentation/articles/install-configure-powershell/ Once completed, open the "powershell.ise", open the "RunFormatInput.ps1" and "RunPscan.ps1", change the subscriptionName and clusterName to your own azure hdinsight account.
+Find the powershell folder. Download and configure the azure powershell. 
+
+Link for download: http://www.microsoft.com/en-gb/download/details.aspx?id=40855
+Link for configuration: http://azure.microsoft.com/en-us/documentation/articles/install-configure-powershell/ 
+
+Once completed, open the "powershell.ise", open the "RunFormatInput.ps1" and "RunPscan.ps1", change the subscriptionName and clusterName to your own azure hdinsight account.
 
 Once finished the previous steps, you could start to find the special roles (the one who spreading ideas).
 
