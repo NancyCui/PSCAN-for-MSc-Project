@@ -55,7 +55,7 @@ public class ResultTFIDF {
 		ArrayList<String> allWords=prepareTFIDF.getAllWords(allDocuments);
 		Collections.sort(allWords);
 		
-		ArrayList<ArrayList<String>> allFDoc=prepareTFIDF.formatedAllDocument(allDocuments);
+		ArrayList<ArrayList<String>> allFDoc=prepareTFIDF.formatedAllDocument(allDocuments);		
 		ArrayList<ArrayList<String>> all=prepareTFIDF.formatedAllDocument(allMembersDocuments);
 
 	 	/*
@@ -65,7 +65,7 @@ public class ResultTFIDF {
 	 	ArrayList<ArrayList<ArrayList<String>>> result=new ArrayList<ArrayList<ArrayList<String>>>();
 	 	ArrayList<ArrayList<ArrayList<String>>> resultAll=new ArrayList<ArrayList<ArrayList<String>>>();
 		for(String w: allWords){
-			ArrayList<ArrayList<String>> wordTFIDF=calculateTFIDF(w,allFDoc,keySet);
+			ArrayList<ArrayList<String>> wordTFIDF=calculateTFIDF(w,allFDoc,keySet);			
 			ArrayList<ArrayList<String>> wordTFIDFAll=calculateTFIDFAll(w,allFDoc,all,keySet);
 			result.add(wordTFIDF);
 			resultAll.add(wordTFIDFAll);
@@ -93,7 +93,7 @@ public class ResultTFIDF {
 		double tfidf;
 		for(int i=0;i<allFDoc.size();i++){
 			ArrayList<String> output=new ArrayList<String>();
-			ArrayList<String> document=allFDoc.get(i);
+			ArrayList<String> document=allFDoc.get(i);		
 			String key=keySet.get(i);			
 			double tf=calculateTF(word,document);
 			double idf=calculateIDF(word, all);

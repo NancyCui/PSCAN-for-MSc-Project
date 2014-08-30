@@ -21,7 +21,7 @@ import javax.swing.JPanel;
 public class LineChartPanel extends JPanel{
 	
 	//color for background, judge line, line chart, axises
-	int[][] color={{255,255,255},{192,192,192},{153,51,250},{25,25,112}};
+	int[][] color={{255,255,255},{192,192,192},{153,51,250},{0,0,0}};
 	
 	//set the label of the x-axis and y-axis
 	private static int shareX=0;
@@ -73,12 +73,15 @@ public class LineChartPanel extends JPanel{
 
 		Stroke strokePoint=new  BasicStroke(1,   BasicStroke.CAP_BUTT,   
                 BasicStroke.JOIN_BEVEL,   0,   
-                new   float[]{1,   4},   0);
+                new   float[]{1,   1},   0);
 		g2d.setStroke(strokePoint);
 		g2d.setColor(new Color(color[1][0],color[1][1],color[1][2]));
 		for(int i=0;i<shareX;i++){
 			//draw the judge line of x-axis
 			g2d.drawLine((int)(originX+unitX*(i+1)), (int)(originY), (int)(originX+unitX*(i+1)), (int)(originY-height));
+			for(int j=1;j<5;j++){
+				g2d.drawLine((int)(originX+unitX*(i)+0.5*j*unitX), (int)(originY), (int)(originX+unitX*(i)+0.5*j*unitX), (int)(originY-height));
+			}
 		}
 		int k=0;
 		for(int i=smallestPoint-1;i<biggestPoint;i++){
@@ -96,8 +99,8 @@ public class LineChartPanel extends JPanel{
 	 */
 	private void drawPoint(Graphics2D g2d) {
 		for(int i=0;i<finalSimi.size();i++){
-			g2d.setColor(new Color(color[2][0]+i*6,color[2][1]-i*8,color[2][2]+i*6));
-			Stroke strokePoint=new BasicStroke(5.0f);
+			g2d.setColor(new Color(color[2][0]+i*6,color[2][1]+i*8,(color[2][2]-i*6)));
+			Stroke strokePoint=new BasicStroke(4.0f);
 			g2d.setStroke(strokePoint);
 			double pointX=originX+unitX*(i+1);			
 			double pointY=originY-(finalSimi.get(i)*10-smallestPoint+1)*unitY;
@@ -109,7 +112,14 @@ public class LineChartPanel extends JPanel{
 			if(i!=(finalSimi.size()-1)){
 				double pointX2=originX+unitX*(i+2);
 				double pointY2=originY-(finalSimi.get(i+1)*10-smallestPoint+1)*unitY;
+				g2d.setColor(new Color(230,230,250));
+				Stroke strokePoint2=new BasicStroke(5.0f);
+				g2d.setStroke(strokePoint2);
+				g2d.drawLine((int)(pointX+2), (int)(pointY+2), (int)(pointX2+2), (int)(pointY2+2));
+				g2d.setColor(new Color(color[2][0]+i*6,color[2][1]+i*8,(color[2][2]-i*6)));
+				g2d.setStroke(strokePoint);
 				g2d.drawLine((int)(pointX), (int)(pointY), (int)(pointX2), (int)(pointY2));
+				
 			}
 			
 		}
