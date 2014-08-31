@@ -29,10 +29,13 @@ public class GetParticipant {
 		ArrayList<String> participants=new ArrayList<String>();
 		String textContent;
 		for(int i=0; i<message.size();i++){
-			textContent=message.get(i).get(column);
+			textContent=message.get(i).get(column);			
 			if(textContent!=""){
 				//delete "users:"
 				textContent=textContent.replaceAll("user:","");
+				if(!textContent.contains(",")){
+					textContent=textContent+","+textContent;					
+				}
 				participants.add(textContent);	
 			}							
 		}

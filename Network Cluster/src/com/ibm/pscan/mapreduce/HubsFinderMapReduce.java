@@ -194,7 +194,6 @@ public class HubsFinderMapReduce {
 	    ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> output=findHubs(vertexs, clusters);
 	    
 	    Map<String,ArrayList<String>> clusterMember=getClusterMembers(output);
-	    System.out.println(clusterMember);
 	    CsvFileIO.writeMapToCsv(path+"/result.csv",clusterMember, conf);
 		
 	  }
