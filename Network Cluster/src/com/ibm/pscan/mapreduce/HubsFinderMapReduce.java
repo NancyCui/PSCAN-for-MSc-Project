@@ -20,7 +20,7 @@ import com.ibm.pscan.io.CsvFileIO;
 import com.ibm.pscan.io.SequenceFileIO;
 
 /**
- * Find the hubs and outliners of the cluster
+ * Find the hubs and outliers of the cluster
  * 
  * @author Ningxin
  */
@@ -30,7 +30,7 @@ public class HubsFinderMapReduce {
 	private static int thresholdForHub=2;
 
 	/**
-	 * Find if the node is hubs, outliners or members
+	 * Find if the node is hubs, outliers or members
 	 * 
 	 * @param vertexs
 	 * @param clusters
@@ -47,7 +47,7 @@ public class HubsFinderMapReduce {
 					vertex.add(1,clusterNo);
 				}
 				else{
-					vertex.get(2).get(0).set("outliners");
+					vertex.get(2).get(0).set("outliers");
 					vertex.remove(1);
 					vertex.add(1,clusterNo);
 				}
@@ -119,13 +119,13 @@ public class HubsFinderMapReduce {
 				String clusterID=o.get(2).toString();
 				clusterMember=putInHashMap(clusterMember,clusterID, ownID);
 			}
-			//If the node is either a "hubs" or "outliners"
+			//If the node is either a "hubs" or "outliers"
 			else{
 				if(o.get(2).get(0).toString().equals("hubs")){
 					clusterMember=putInHashMap(clusterMember,"hubs", ownID);
 				}
 				else{
-					clusterMember=putInHashMap(clusterMember,"outliners", ownID);
+					clusterMember=putInHashMap(clusterMember,"outliers", ownID);
 				}
 			}
 		}
@@ -190,7 +190,7 @@ public class HubsFinderMapReduce {
 		fsCluster.close();
 	    
 	    
-	    //find Hubs and outliners  
+	    //find Hubs and outliers  
 	    ArrayListWritable<ArrayListWritable<ArrayListWritable<Text>>> output=findHubs(vertexs, clusters);
 	    
 	    Map<String,ArrayList<String>> clusterMember=getClusterMembers(output);
