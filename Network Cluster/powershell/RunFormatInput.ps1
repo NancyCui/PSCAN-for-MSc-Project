@@ -16,4 +16,4 @@ $formatJob = Start-AzureHDInsightJob `
 Wait-AzureHDInsightJob -Job $formatJob -WaitTimeoutInSeconds 3600 
 
 # Get the job standard error output
-Get-AzureHDInsightJobOutput -Cluster $clusterName -JobId $wordCountJob.JobId -StandardError 
+Get-AzureHDInsightJobOutput -Cluster $clusterName -JobId $formatJob.JobId -StandardError 
