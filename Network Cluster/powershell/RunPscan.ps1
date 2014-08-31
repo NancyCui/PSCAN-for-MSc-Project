@@ -2,19 +2,19 @@
 $clusterName = "ningxin"    
 
 # Define the word count MapReduce job
-$wordCountJobDefinition = New-AzureHDInsightMapReduceJobDefinition `
+$pscanJobDefinition = New-AzureHDInsightMapReduceJobDefinition `
         -JarFile "wasb:///example/jars/pscan.jar" `
         -ClassName "com.ibm.pscan.control.PSCAN" `
-        -Arguments "wasb:///example/pscan/userRelation.txt", "wasb:///example/data/pscanOutput","0.8"
+        -Arguments "wasb:///example/pscan/userRelation.txt", "wasb:///example/data/pscanOutput","0.82"
 
 Select-AzureSubscription $subscriptionName
 
-$wordCountJob = Start-AzureHDInsightJob `
+$pscanJob = Start-AzureHDInsightJob `
         -Cluster $clusterName `
-        -JobDefinition $wordCountJobDefinition 
+        -JobDefinition $pscanJobDefinition 
 
 # Wait for the job to complete
-Wait-AzureHDInsightJob -Job $wordCountJob -WaitTimeoutInSeconds 3600 
+Wait-AzureHDInsightJob -Job $pscanJob -WaitTimeoutInSeconds 3600 
 
 # Get the job standard error output
-Get-AzureHDInsightJobOutput -Cluster $clusterName -JobId $wordCountJob.JobId -StandardError 
+Get-AzureHDInsightJobOutput -Cluster $clusterName -JobId $pscanJob.JobId -StandardError 
