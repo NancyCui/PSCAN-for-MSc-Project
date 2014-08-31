@@ -3,7 +3,7 @@ Using Graph Analysis and Data analytics to Derive Team Relationships from Yammer
 
 Implemented the PSCAN algorithm in Xu et al. (2013) on Azure HDInsight. More features are added to help the algorithm fit for the yammer social network. This project is written for IBM and UCL for finding the hubs and outliners of the yammer enterprise social network. The details of the project please see Ningxin Cui (2014), "Using Graph Analysis and Data analytics to Derive Team Relationships from Yammer Social Interaction Data".
 
-Copyright owned by Ningxin Cui, if anyone want to use this code, please contact the author first. Otherwise, it will violate the copyright. The copyright of the external libraries are owned by the realted user. 
+Copyright owned by Ningxin Cui & IBM & UCL, if anyone want to use this code for benefit, please contact the author first. Otherwise, the copyright of the author is violated. The copyright of the external libraries are owned by the realted user. 
 
 Thanks for "Microsoft Azure", "Cloud9" and "Apache Hadoop". 
 
