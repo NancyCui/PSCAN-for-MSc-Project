@@ -29,7 +29,10 @@ public class ResultTFIDF {
 	
 	public static void main(String[] args) throws IOException {
 		
+		//Get id of the hubs
 		ArrayList<String> hubs=getHubs();
+		//Get id of the outliers
+//		ArrayList<String> hubs=getOutliers();
 		ArrayList<ArrayList<String>> messages=GetDetails.messages();
 		ArrayList<ArrayList<String>> users=GetDetails.userDetails();
 		ArrayList<String> allMember=new ArrayList<String>();
@@ -194,7 +197,7 @@ public class ResultTFIDF {
 	/**
 	 * Get the ID of the hubs
 	 */
-	private static ArrayList<String> getHubs() throws IOException {
+	public static ArrayList<String> getHubs() throws IOException {
 			AzureIO.downloadFromAzure(cloudFilePath,containerName, outputFilePath);
 			ArrayList<ArrayList<String>> contents=CsvFileIO.readCSVFile(outputFilePath);
 			ArrayList<String> hubs= new ArrayList<String>();
@@ -207,6 +210,24 @@ public class ResultTFIDF {
 				}
 			}
 			return hubs;
+	 }
+	
+	/**
+	 * Get the ID of the outliers
+	 */
+	public static ArrayList<String> getOutliers() throws IOException {
+			AzureIO.downloadFromAzure(cloudFilePath,containerName, outputFilePath);
+			ArrayList<ArrayList<String>> contents=CsvFileIO.readCSVFile(outputFilePath);
+			ArrayList<String> outliers= new ArrayList<String>();
+			for(ArrayList<String> c: contents){
+				if(c.get(0).equals("Group:outliers")){
+					for(int i=1;i<c.size();i++){
+						outliers.add(c.get(i).trim());
+					}
+					
+				}
+			}
+			return outliers;
 	 }
 
 
