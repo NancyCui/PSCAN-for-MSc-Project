@@ -48,7 +48,7 @@ Once finished the previous steps, you could start to find the special roles (the
   3. Uncompress the jar file, copy it to "c://Tutorials", if you do not have this folder, generate one.
 
   4. Run "hadoop commond line", copy these two lines:
-      cd ../../tutorials/pscan
+      cd ../../tutorials/Network Cluster-PSCAN
       C:\Hadoop\java\bin\jar -cvf pscan.jar *.*
 
   5. Find the pscan.jar file, copy it to the directory same as the one in "UploadJar.java". Run "UploadJar.java".
